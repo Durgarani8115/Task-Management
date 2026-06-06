@@ -26,36 +26,201 @@ model Workspace {
   name        String
   slug        String   @unique
   description String?
-
   createdAt   DateTime @default(now())
-
   projects    Project[]
   members     WorkspaceMember[]
 }
 
-model WorkspaceMember {
-  id          Int        @id @default(autoincrement())
-  user        User
-  userId      Int
-  workspaceId Int
-  role        String
-  createdAt   DateTime   @default(now())
-  workspace   workspaces @relation(fields: [workspaceId], references: [id])
+enum WorkspaceRole{
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
 }
 
-model Project {
-  id          Int        @id @default(autoincrement())
-  name        String
+model WorkspaceMember{
+  id          String @id @default(cuid())
+
+  workspaceId String
+  userId      String
+
+  workspace Workspace @relation(fields:[workspaceId],references:[id])
+  user User @relation(fields:[userId],references:[id])
+
+  role WorkspaceRole
+
+  @@unique([workspaceId,userId])
+}
+
+model Project{
+  id String @id @default(cuid())
+
+  name String
+
   description String?
-  workspaces  workspaces @relation(fields: [workspaceId], references: [id])
-  workspaceId Int
-   createdAt   DateTime  @default(now())
-    // Kanban columns for this project
-  tasks       Task[]
-  columns TaskColumns[]
 
+  color String?
+
+  icon String?
+
+  workspaceId String
+
+  workspace Workspace @relation(fields:[workspaceId],references:[id])
+
+  columns TaskColumn[]
+
+  tasks Task[]
+
+  createdAt DateTime @default(now())
 }
 
-model TaskColumns {
-id 
+model TaskColumn{
+
+  id String @id @default(cuid())
+
+  title String
+
+  position Int
+
+  projectId String
+
+  project Project @relation(fields:[projectId],references:[id])
+
+  tasks Task[]
+}
+
+
+enum Priority{
+ LOW
+ MEDIUM
+ HIGH
+ URGENT
+}
+
+model Task{
+
+ id String @id @default(cuid())
+
+ title String
+
+ description String?
+
+ priority Priority @default(MEDIUM)
+
+ dueDate DateTime?
+
+ position Int
+
+ projectId String
+
+ columnId String
+
+ project Project @relation(fields:[projectId],references:[id])
+
+ column TaskColumn @relation(fields:[columnId],references:[id])
+
+ createdById String?
+
+ createdBy User? @relation(fields:[createdById],references:[id])
+
+ assignees TaskAssignee[]
+
+ comments Comment[]
+
+ checklist ChecklistItem[]
+
+ attachments Attachment[]
+
+ activities ActivityLog[]
+
+ tags TaskTag[]
+
+ createdAt DateTime @default(now())
+
+ updatedAt DateTime @updatedAt
+}
+
+model TaskAssignee{
+
+ id String @id @default(cuid())
+
+ taskId String
+
+ userId String
+
+ task Task @relation(fields:[taskId],references:[id])
+
+ user User @relation(fields:[userId],references:[id])
+
+ @@unique([taskId,userId])
+}
+
+model Comment{
+
+ id String @id @default(cuid())
+
+ body String
+
+ taskId String
+
+ authorId String
+
+ task Task @relation(fields:[taskId],references:[id])
+
+ author User @relation(fields:[authorId],references:[id])
+
+ createdAt DateTime @default(now())
+}
+
+model ChecklistItem{
+
+ id String @id @default(cuid())
+
+ title String
+
+ done Boolean @default(false)
+
+ position Int
+
+ taskId String
+
+ task Task @relation(fields:[taskId],references:[id])
+}
+
+model Attachment{
+
+ id String @id @default(cuid())
+
+ filename String
+
+ url String
+
+ size Int?
+
+ mimetype String?
+
+ taskId String
+
+ task Task @relation(fields:[taskId],references:[id])
+
+ createdAt DateTime @default(now())
+}
+
+model ActivityLog{
+
+ id String @id @default(cuid())
+
+ taskId String
+
+ actorId String
+
+ action String
+
+ meta Json?
+
+ task Task @relation(fields:[taskId],references:[id])
+
+ actor User @relation(fields:[actorId],references:[id])
+
+ createdAt DateTime @default(now())
 }
