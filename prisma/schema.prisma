@@ -8,31 +8,54 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
+  name      String
   email     String   @unique
-  name      String?
+  image     String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // relationships
   workspaces WorkspaceMember[]
-  comments   Comment[]
   assigned   TaskAssignee[]
+  comments   Comment[]
 }
 
-model workspaces {
-  id        Int               @id @default(autoincrement())
-  name      String
-  createdAt DateTime          @default(now())
-  projects  Project[]
-  members   WorkspaceMember[]
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+
+  createdAt   DateTime @default(now())
+
+  projects    Project[]
+  members     WorkspaceMember[]
 }
-model WorkspaceMember{
-  id Int @id @default(autoincrement())
-  user User
-  userId Int
+
+model WorkspaceMember {
+  id          Int        @id @default(autoincrement())
+  user        User
+  userId      Int
   workspaceId Int
-  role String
-  createdAt DateTime @default(now())
-  workspace workspaces @relation(fields: [workspaceId], references: [id])
+  role        String
+  createdAt   DateTime   @default(now())
+  workspace   workspaces @relation(fields: [workspaceId], references: [id])
+}
+
+model Project {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  workspaces  workspaces @relation(fields: [workspaceId], references: [id])
+  workspaceId Int
+   createdAt   DateTime  @default(now())
+    // Kanban columns for this project
+  tasks       Task[]
+  columns TaskColumns[]
+
+}
+
+model TaskColumns {
+id 
 }
