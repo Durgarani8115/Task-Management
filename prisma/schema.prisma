@@ -19,6 +19,10 @@ model User {
   workspaces WorkspaceMember[]
   assigned   TaskAssignee[]
   comments   Comment[]
+
+  createdTasks Task[] @relation("CreatedTasks")
+  activities ActivityLog[] @relation("UserActivities")
+
 }
 
 model Workspace {
@@ -70,6 +74,7 @@ model Project{
   columns TaskColumn[]
 
   tasks Task[]
+  tags Tag[]
 
   createdAt DateTime @default(now())
 }
@@ -97,6 +102,7 @@ enum Priority{
  URGENT
 }
 
+
 model Task{
 
  id String @id @default(cuid())
@@ -121,7 +127,7 @@ model Task{
 
  createdById String?
 
- createdBy User? @relation(fields:[createdById],references:[id])
+createdBy User? @relation("CreatedTasks", fields: [createdById], references: [id])
 
  assignees TaskAssignee[]
 
@@ -134,10 +140,26 @@ model Task{
  activities ActivityLog[]
 
  tags TaskTag[]
+ 
 
  createdAt DateTime @default(now())
 
  updatedAt DateTime @updatedAt
+}
+
+model TaskTag{
+
+ id String @id @default(cuid())
+
+ taskId String
+
+ tagId String
+
+ task Task @relation(fields:[taskId],references:[id])
+
+ tag Tag @relation(fields:[tagId],references:[id])
+
+ @@unique([taskId,tagId])
 }
 
 model TaskAssignee{
@@ -154,6 +176,23 @@ model TaskAssignee{
 
  @@unique([taskId,userId])
 }
+model Tag{
+
+ id String @id @default(cuid())
+
+ name String
+
+ color String?
+
+ projectId String
+
+ project Project @relation(fields:[projectId],references:[id])
+
+ tasks TaskTag[]
+
+ @@unique([name,projectId])
+}
+
 
 model Comment{
 
@@ -220,7 +259,7 @@ model ActivityLog{
 
  task Task @relation(fields:[taskId],references:[id])
 
- actor User @relation(fields:[actorId],references:[id])
+ actor User @relation("UserActivities", fields: [actorId], references: [id])
 
  createdAt DateTime @default(now())
 }
