@@ -97,7 +97,108 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
-  password: 'password',
+  image: 'image',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.WorkspaceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.WorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  role: 'role'
+};
+
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  color: 'color',
+  icon: 'icon',
+  workspaceId: 'workspaceId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.TaskColumnScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  position: 'position',
+  projectId: 'projectId'
+};
+
+exports.Prisma.TaskScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  priority: 'priority',
+  dueDate: 'dueDate',
+  position: 'position',
+  projectId: 'projectId',
+  columnId: 'columnId',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TaskTagScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  tagId: 'tagId'
+};
+
+exports.Prisma.TaskAssigneeScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  userId: 'userId'
+};
+
+exports.Prisma.TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  color: 'color',
+  projectId: 'projectId'
+};
+
+exports.Prisma.CommentScalarFieldEnum = {
+  id: 'id',
+  body: 'body',
+  taskId: 'taskId',
+  authorId: 'authorId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ChecklistItemScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  done: 'done',
+  position: 'position',
+  taskId: 'taskId'
+};
+
+exports.Prisma.AttachmentScalarFieldEnum = {
+  id: 'id',
+  filename: 'filename',
+  url: 'url',
+  size: 'size',
+  mimetype: 'mimetype',
+  taskId: 'taskId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ActivityLogScalarFieldEnum = {
+  id: 'id',
+  taskId: 'taskId',
+  actorId: 'actorId',
+  action: 'action',
+  meta: 'meta',
   createdAt: 'createdAt'
 };
 
@@ -106,14 +207,54 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+exports.WorkspaceRole = exports.$Enums.WorkspaceRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER',
+  VIEWER: 'VIEWER'
+};
+
+exports.Priority = exports.$Enums.Priority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+};
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Workspace: 'Workspace',
+  WorkspaceMember: 'WorkspaceMember',
+  Project: 'Project',
+  TaskColumn: 'TaskColumn',
+  Task: 'Task',
+  TaskTag: 'TaskTag',
+  TaskAssignee: 'TaskAssignee',
+  Tag: 'Tag',
+  Comment: 'Comment',
+  ChecklistItem: 'ChecklistItem',
+  Attachment: 'Attachment',
+  ActivityLog: 'ActivityLog'
 };
 /**
  * Create the Client
@@ -163,13 +304,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id       String @id @default(cuid())\n  name     String\n  email    String @unique\n  password String\n\n  createdAt DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "1917dcfad29933168f6c309f6445e9a1ed031d2e21daf2b583142b2d19e9bea0",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id    String  @id @default(cuid())\n  name  String\n  email String  @unique\n  image String?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  workspaces WorkspaceMember[]\n  assigned   TaskAssignee[]\n  comments   Comment[]\n\n  createdTasks Task[]        @relation(\"CreatedTasks\")\n  activities   ActivityLog[] @relation(\"UserActivities\")\n}\n\nmodel Workspace {\n  id          String            @id @default(cuid())\n  name        String\n  slug        String            @unique\n  description String?\n  createdAt   DateTime          @default(now())\n  projects    Project[]\n  members     WorkspaceMember[]\n}\n\nenum WorkspaceRole {\n  OWNER\n  ADMIN\n  MEMBER\n  VIEWER\n}\n\nmodel WorkspaceMember {\n  id String @id @default(cuid())\n\n  workspaceId String\n  userId      String\n\n  workspace Workspace @relation(fields: [workspaceId], references: [id])\n  user      User      @relation(fields: [userId], references: [id])\n\n  role WorkspaceRole\n\n  @@unique([workspaceId, userId])\n}\n\nmodel Project {\n  id String @id @default(cuid())\n\n  name String\n\n  description String?\n\n  color String?\n\n  icon String?\n\n  workspaceId String\n\n  workspace Workspace @relation(fields: [workspaceId], references: [id])\n\n  columns TaskColumn[]\n\n  tasks Task[]\n  tags  Tag[]\n\n  createdAt DateTime @default(now())\n}\n\nmodel TaskColumn {\n  id String @id @default(cuid())\n\n  title String\n\n  position Int\n\n  projectId String\n\n  project Project @relation(fields: [projectId], references: [id])\n\n  tasks Task[]\n}\n\nenum Priority {\n  LOW\n  MEDIUM\n  HIGH\n  URGENT\n}\n\nmodel Task {\n  id String @id @default(cuid())\n\n  title String\n\n  description String?\n\n  priority Priority @default(MEDIUM)\n\n  dueDate DateTime?\n\n  position Int\n\n  projectId String\n\n  columnId String\n\n  project Project @relation(fields: [projectId], references: [id])\n\n  column TaskColumn @relation(fields: [columnId], references: [id])\n\n  createdById String?\n\n  createdBy User? @relation(\"CreatedTasks\", fields: [createdById], references: [id])\n\n  assignees TaskAssignee[]\n\n  comments Comment[]\n\n  checklist ChecklistItem[]\n\n  attachments Attachment[]\n\n  activities ActivityLog[]\n\n  tags TaskTag[]\n\n  createdAt DateTime @default(now())\n\n  updatedAt DateTime @updatedAt\n}\n\nmodel TaskTag {\n  id String @id @default(cuid())\n\n  taskId String\n\n  tagId String\n\n  task Task @relation(fields: [taskId], references: [id])\n\n  tag Tag @relation(fields: [tagId], references: [id])\n\n  @@unique([taskId, tagId])\n}\n\nmodel TaskAssignee {\n  id String @id @default(cuid())\n\n  taskId String\n\n  userId String\n\n  task Task @relation(fields: [taskId], references: [id])\n\n  user User @relation(fields: [userId], references: [id])\n\n  @@unique([taskId, userId])\n}\n\nmodel Tag {\n  id String @id @default(cuid())\n\n  name String\n\n  color String?\n\n  projectId String\n\n  project Project @relation(fields: [projectId], references: [id])\n\n  tasks TaskTag[]\n\n  @@unique([name, projectId])\n}\n\nmodel Comment {\n  id String @id @default(cuid())\n\n  body String\n\n  taskId String\n\n  authorId String\n\n  task Task @relation(fields: [taskId], references: [id])\n\n  author User @relation(fields: [authorId], references: [id])\n\n  createdAt DateTime @default(now())\n}\n\nmodel ChecklistItem {\n  id String @id @default(cuid())\n\n  title String\n\n  done Boolean @default(false)\n\n  position Int\n\n  taskId String\n\n  task Task @relation(fields: [taskId], references: [id])\n}\n\nmodel Attachment {\n  id String @id @default(cuid())\n\n  filename String\n\n  url String\n\n  size Int?\n\n  mimetype String?\n\n  taskId String\n\n  task Task @relation(fields: [taskId], references: [id])\n\n  createdAt DateTime @default(now())\n}\n\nmodel ActivityLog {\n  id String @id @default(cuid())\n\n  taskId String\n\n  actorId String\n\n  action String\n\n  meta Json?\n\n  task Task @relation(fields: [taskId], references: [id])\n\n  actor User @relation(\"UserActivities\", fields: [actorId], references: [id])\n\n  createdAt DateTime @default(now())\n}\n",
+  "inlineSchemaHash": "662756344df4b8a39e0979ee7bf9600927b3185973bc38b3e5b0f72b1050e2f5",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"workspaces\",\"kind\":\"object\",\"type\":\"WorkspaceMember\",\"relationName\":\"UserToWorkspaceMember\"},{\"name\":\"assigned\",\"kind\":\"object\",\"type\":\"TaskAssignee\",\"relationName\":\"TaskAssigneeToUser\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"Comment\",\"relationName\":\"CommentToUser\"},{\"name\":\"createdTasks\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"CreatedTasks\"},{\"name\":\"activities\",\"kind\":\"object\",\"type\":\"ActivityLog\",\"relationName\":\"UserActivities\"}],\"dbName\":null},\"Workspace\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"slug\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"projects\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToWorkspace\"},{\"name\":\"members\",\"kind\":\"object\",\"type\":\"WorkspaceMember\",\"relationName\":\"WorkspaceToWorkspaceMember\"}],\"dbName\":null},\"WorkspaceMember\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workspaceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workspace\",\"kind\":\"object\",\"type\":\"Workspace\",\"relationName\":\"WorkspaceToWorkspaceMember\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToWorkspaceMember\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"WorkspaceRole\"}],\"dbName\":null},\"Project\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"icon\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workspaceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"workspace\",\"kind\":\"object\",\"type\":\"Workspace\",\"relationName\":\"ProjectToWorkspace\"},{\"name\":\"columns\",\"kind\":\"object\",\"type\":\"TaskColumn\",\"relationName\":\"ProjectToTaskColumn\"},{\"name\":\"tasks\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"ProjectToTask\"},{\"name\":\"tags\",\"kind\":\"object\",\"type\":\"Tag\",\"relationName\":\"ProjectToTag\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"TaskColumn\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToTaskColumn\"},{\"name\":\"tasks\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"TaskToTaskColumn\"}],\"dbName\":null},\"Task\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"priority\",\"kind\":\"enum\",\"type\":\"Priority\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"columnId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToTask\"},{\"name\":\"column\",\"kind\":\"object\",\"type\":\"TaskColumn\",\"relationName\":\"TaskToTaskColumn\"},{\"name\":\"createdById\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CreatedTasks\"},{\"name\":\"assignees\",\"kind\":\"object\",\"type\":\"TaskAssignee\",\"relationName\":\"TaskToTaskAssignee\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"Comment\",\"relationName\":\"CommentToTask\"},{\"name\":\"checklist\",\"kind\":\"object\",\"type\":\"ChecklistItem\",\"relationName\":\"ChecklistItemToTask\"},{\"name\":\"attachments\",\"kind\":\"object\",\"type\":\"Attachment\",\"relationName\":\"AttachmentToTask\"},{\"name\":\"activities\",\"kind\":\"object\",\"type\":\"ActivityLog\",\"relationName\":\"ActivityLogToTask\"},{\"name\":\"tags\",\"kind\":\"object\",\"type\":\"TaskTag\",\"relationName\":\"TaskToTaskTag\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"TaskTag\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tagId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"TaskToTaskTag\"},{\"name\":\"tag\",\"kind\":\"object\",\"type\":\"Tag\",\"relationName\":\"TagToTaskTag\"}],\"dbName\":null},\"TaskAssignee\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"TaskToTaskAssignee\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"TaskAssigneeToUser\"}],\"dbName\":null},\"Tag\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"projectId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"project\",\"kind\":\"object\",\"type\":\"Project\",\"relationName\":\"ProjectToTag\"},{\"name\":\"tasks\",\"kind\":\"object\",\"type\":\"TaskTag\",\"relationName\":\"TagToTaskTag\"}],\"dbName\":null},\"Comment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"body\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"authorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"CommentToTask\"},{\"name\":\"author\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CommentToUser\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"ChecklistItem\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"done\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"position\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"ChecklistItemToTask\"}],\"dbName\":null},\"Attachment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"filename\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"url\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"size\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"mimetype\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"AttachmentToTask\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"ActivityLog\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"taskId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"actorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"action\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"meta\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"task\",\"kind\":\"object\",\"type\":\"Task\",\"relationName\":\"ActivityLogToTask\"},{\"name\":\"actor\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserActivities\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
