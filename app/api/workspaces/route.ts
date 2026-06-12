@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         if (!name) {
             return NextResponse.json(
                 {
-                    message: "Works[ace name is required",
+                    message: "Workspace name is required",
                 },
                 {
                     status: 400,
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     // RENAME
 
     if (action === "rename") {
-        const workspaceId = formData.get("workspaceId"?.toString());
+        const workspaceId = formData.get("workspaceId")?.toString();
 
         const name = formData.get("name")?.toString().trim();
 
@@ -82,5 +82,6 @@ export async function POST(request: Request) {
         }
     }
     return NextResponse.redirect(redirectUrl);
+
 
 }
