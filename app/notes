@@ -1,0 +1,266 @@
+"use client"
+
+import { useState } from "react";
+import Breadcrumb from "@/components/header/breadcrumb";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowUpDown,
+  Filter,
+  Share2,
+  SlidersHorizontal,
+} from "lucide-react";
+
+type Task = {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  dueDate: string;
+  priority: "Low" | "Medium" | "High";
+  assignees: string[];
+};
+
+type Column = {
+  id: string;
+  title: string;
+  tasks: Task[];
+};
+
+const initialColumns: Column[] = [
+  {
+    id: "todo",
+    title: "To do",
+    tasks: [
+      {
+        id: "task-1",
+        title: "Design Homepage Wireframe",
+        description: "Discuss layout with the marketing team for alignment.",
+        status: "Not Started",
+        dueDate: "02 Nov 2023",
+        priority: "Low",
+        assignees: ["DM"],
+      },
+      {
+        id: "task-2",
+        title: "Write onboarding copy",
+        description: "Create team-facing introduction content.",
+        status: "In Research",
+        dueDate: "03 Nov 2023",
+        priority: "Medium",
+        assignees: ["AL"],
+      },
+    ],
+  },
+  {
+    id: "inprogress",
+    title: "In Progress",
+    tasks: [
+      {
+        id: "task-3",
+        title: "Review customer feedback",
+        description: "Summarize the latest feedback from usability tests.",
+        status: "On Track",
+        dueDate: "02 Nov 2023",
+        priority: "High",
+        assignees: ["SJ"],
+      },
+      {
+        id: "task-4",
+        title: "Update design system",
+        description: "Refine cards, buttons, and form components.",
+        status: "On Track",
+        dueDate: "05 Nov 2023",
+        priority: "Low",
+        assignees: ["DM"],
+      },
+    ],
+  },
+  {
+    id: "done",
+    title: "Done",
+    tasks: [
+      {
+        id: "task-5",
+        title: "Finalize project scope",
+        description: "Approve milestones and launch plan.",
+        status: "Complete",
+        dueDate: "01 Nov 2023",
+        priority: "High",
+        assignees: ["AL"],
+      },
+    ],
+  },
+];
+
+const tabs = ["Overview", "Board", "List", "Table", "Timeline"];
+
+export default function Home() {
+  const [columns, setColumns] = useState<Column[]>(initialColumns);
+  const [activeTab, setActiveTab] = useState("Board");
+  const [dragTaskId, setDragTaskId] = useState<string | null>(null);
+  const [dragSourceColumn, setDragSourceColumn] = useState<string | null>(null);
+
+  const handleDragStart = (taskId: string, columnId: string) => {
+    setDragTaskId(taskId);
+    setDragSourceColumn(columnId);
+  };
+
+  const handleDrop = (targetColumnId: string) => {
+    if (!dragTaskId || !dragSourceColumn) return;
+    if (dragSourceColumn === targetColumnId) {
+      setDragTaskId(null);
+      setDragSourceColumn(null);
+      return;
+    }
+
+    setColumns((currentColumns) => {
+      const sourceColumn = currentColumns.find((column) => column.id === dragSourceColumn);
+      const targetColumn = currentColumns.find((column) => column.id === targetColumnId);
+      if (!sourceColumn || !targetColumn) return currentColumns;
+
+      const task = sourceColumn.tasks.find((item) => item.id === dragTaskId);
+      if (!task) return currentColumns;
+
+      return currentColumns.map((column) => {
+        if (column.id === dragSourceColumn) {
+          return { ...column, tasks: column.tasks.filter((item) => item.id !== dragTaskId) };
+        }
+        if (column.id === targetColumnId) {
+          return { ...column, tasks: [...column.tasks, task] };
+        }
+        return column;
+      });
+    });
+
+    setDragTaskId(null);
+    setDragSourceColumn(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <Breadcrumb
+          items={[
+            { label: "Team spaces", href: "/" },
+            { label: "Tasks" },
+          ]}
+        />
+
+        <div className="mt-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Tasks</div>
+            <div className="text-3xl font-semibold text-slate-900">Tasks</div>
+            <p className="max-w-2xl text-sm leading-6 text-slate-600">Short description will be placed here</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex -space-x-2">
+              {['DM','AL','SJ'].map((initial) => (
+                <div
+                  key={initial}
+                  className="h-10 w-10 rounded-full border border-white bg-violet-600 text-xs font-semibold text-white shadow-sm flex items-center justify-center"
+                >
+                  {initial}
+                </div>
+              ))}
+            </div>
+            <Button variant="outline" size="sm">Invite</Button>
+            <Button variant="outline" size="sm">
+              <Share2 className="mr-2" size={16} />Share
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-2xl px-4 py-2 text-sm font-medium transition ${
+                  activeTab === tab
+                    ? "bg-violet-600 text-white shadow-sm"
+                    : "bg-white text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Filter className="mr-2" size={16} />Filter
+            </Button>
+            <Button variant="outline" size="sm">
+              <SlidersHorizontal className="mr-2" size={16} />Group By
+            </Button>
+            <Button variant="outline" size="sm">
+              <ArrowUpDown className="mr-2" size={16} />Sort
+            </Button>
+          </div>
+        </div>
+
+        {activeTab !== "Board" ? (
+          <div className="mt-6 rounded-3xl bg-white p-8 shadow-sm">
+            <p className="text-sm text-slate-600">The {activeTab} view is not implemented yet. Use the Board tab to manage cards and drag tasks between columns.</p>
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-4 xl:grid-cols-3">
+            {columns.map((column) => (
+              <section
+                key={column.id}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={() => handleDrop(column.id)}
+                className="rounded-3xl bg-white p-4 shadow-sm"
+              >
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">{column.title}</h2>
+                    <p className="text-xs text-slate-400">{column.tasks.length} tasks</p>
+                  </div>
+                  <div className="h-8 min-w-8 rounded-full bg-slate-100 text-center text-sm font-semibold text-slate-700">{column.tasks.length}</div>
+                </div>
+
+                <div className="space-y-4">
+                  {column.tasks.map((task) => (
+                    <article
+                      key={task.id}
+                      draggable
+                      onDragStart={() => handleDragStart(task.id, column.id)}
+                      className="cursor-grab rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm transition hover:border-violet-300 hover:bg-white"
+                    >
+                      <div className="mb-2 flex items-center justify-between gap-3 text-xs text-slate-500">
+                        <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-700 shadow-sm">{task.status}</span>
+                        <span className={`rounded-full px-2 py-1 font-semibold ${
+                          task.priority === "High"
+                            ? "bg-rose-100 text-rose-700"
+                            : task.priority === "Medium"
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        } text-[0.65rem] uppercase`}>{task.priority}</span>
+                      </div>
+                      <h3 className="text-base font-semibold text-slate-900">{task.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-slate-600">{task.description}</p>
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                          <Share2 size={14} /> {task.dueDate}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {task.assignees.map((assignee) => (
+                            <span key={assignee} className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-violet-600 text-[0.75rem] font-semibold text-white shadow-sm">{assignee}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+

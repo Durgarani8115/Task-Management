@@ -12,6 +12,7 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar"
 import Link  from "next/link"
+import Image from "next/image"
 import { Button } from "./ui/button"
 
 
@@ -92,9 +93,20 @@ export function AppSidebar() {
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton>
-                        <Link href="/" className="flex items-center gap-2" >
+                        <Link href="/" className="flex items-center gap-2 " >
+                        <Image
+                                src="/girl3.jpg"
+                                alt="logo"
+                                width={20}
+                                height={20}
+                            />
+                            <div className="">
+                        <span className="">Lisa modi
+
                         
-                        <span >Lisa modi</span>
+                        </span>
+                        <h3>lisa111@gmail.com</h3>
+                        </div>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
