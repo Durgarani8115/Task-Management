@@ -2299,6 +2299,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     image: string | null
+    passwordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2308,6 +2309,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     image: string | null
+    passwordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2317,6 +2319,7 @@ export namespace Prisma {
     name: number
     email: number
     image: number
+    passwordHash: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2328,6 +2331,7 @@ export namespace Prisma {
     name?: true
     email?: true
     image?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2337,6 +2341,7 @@ export namespace Prisma {
     name?: true
     email?: true
     image?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2346,6 +2351,7 @@ export namespace Prisma {
     name?: true
     email?: true
     image?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2428,6 +2434,7 @@ export namespace Prisma {
     name: string
     email: string
     image: string | null
+    passwordHash: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2454,6 +2461,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     image?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     workspaces?: boolean | User$workspacesArgs<ExtArgs>
@@ -2469,6 +2477,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     image?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2478,6 +2487,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     image?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2487,11 +2497,12 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     image?: boolean
+    passwordHash?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "image" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "image" | "passwordHash" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     workspaces?: boolean | User$workspacesArgs<ExtArgs>
     assigned?: boolean | User$assignedArgs<ExtArgs>
@@ -2517,6 +2528,7 @@ export namespace Prisma {
       name: string
       email: string
       image: string | null
+      passwordHash: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2951,6 +2963,7 @@ export namespace Prisma {
     readonly name: FieldRef<"User", 'String'>
     readonly email: FieldRef<"User", 'String'>
     readonly image: FieldRef<"User", 'String'>
+    readonly passwordHash: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -16874,6 +16887,7 @@ export namespace Prisma {
     name: 'name',
     email: 'email',
     image: 'image',
+    passwordHash: 'passwordHash',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -17179,6 +17193,7 @@ export namespace Prisma {
     name?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
     image?: StringNullableFilter<"User"> | string | null
+    passwordHash?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     workspaces?: WorkspaceMemberListRelationFilter
@@ -17193,6 +17208,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     image?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     workspaces?: WorkspaceMemberOrderByRelationAggregateInput
@@ -17210,6 +17226,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringFilter<"User"> | string
     image?: StringNullableFilter<"User"> | string | null
+    passwordHash?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     workspaces?: WorkspaceMemberListRelationFilter
@@ -17224,6 +17241,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     image?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -17239,6 +17257,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
+    passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -17997,6 +18016,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberCreateNestedManyWithoutUserInput
@@ -18011,6 +18031,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
@@ -18025,6 +18046,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUpdateManyWithoutUserNestedInput
@@ -18039,6 +18061,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -18053,6 +18076,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18062,6 +18086,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18071,6 +18096,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18910,6 +18936,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     image?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18919,6 +18946,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     image?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18928,6 +18956,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     image?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21322,6 +21351,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assigned?: TaskAssigneeCreateNestedManyWithoutUserInput
@@ -21335,6 +21365,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assigned?: TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
@@ -21393,6 +21424,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assigned?: TaskAssigneeUpdateManyWithoutUserNestedInput
@@ -21406,6 +21438,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assigned?: TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
@@ -21811,6 +21844,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberCreateNestedManyWithoutUserInput
@@ -21824,6 +21858,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
@@ -22055,6 +22090,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUpdateManyWithoutUserNestedInput
@@ -22068,6 +22104,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -22389,6 +22426,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberCreateNestedManyWithoutUserInput
@@ -22402,6 +22440,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
@@ -22480,6 +22519,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUpdateManyWithoutUserNestedInput
@@ -22493,6 +22533,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -22649,6 +22690,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberCreateNestedManyWithoutUserInput
@@ -22662,6 +22704,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
@@ -22740,6 +22783,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUpdateManyWithoutUserNestedInput
@@ -22753,6 +22797,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -22993,6 +23038,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberCreateNestedManyWithoutUserInput
@@ -23006,6 +23052,7 @@ export namespace Prisma {
     name: string
     email: string
     image?: string | null
+    passwordHash?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     workspaces?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
@@ -23084,6 +23131,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUpdateManyWithoutUserNestedInput
@@ -23097,6 +23145,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     workspaces?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput

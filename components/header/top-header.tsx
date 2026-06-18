@@ -58,7 +58,7 @@ export default function TopHeader() {
         <button
           type="button"
           aria-label="Help"
-          className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
+          className="grid h-9 w-9 place-items-center rounded-md border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
         >
           <CircleHelp size={18} />
         </button>
@@ -66,7 +66,7 @@ export default function TopHeader() {
         <button
           type="button"
           aria-label="Notifications"
-          className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
+          className="grid h-9 w-9 place-items-center rounded-md border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
         >
           <Bell size={18} />
         </button>
