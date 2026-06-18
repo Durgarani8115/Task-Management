@@ -8,32 +8,6 @@ function WorkspacePage() {
       <h2 className='text-xl sm:text-2xl font-semibold mb-4'>create new workspace</h2>
       {/* basic form to take data */}
 
-<form action="api/workspaces" method='POST'>
-
-<input type='hidden' value="create" name="_action" />
-<div className='flex flex-col-4 gap-4'>
-<label htmlFor='name'>name</label>
-<input id='name'name='name' type='text' placeholder='enter name' className='border rounded-md p-2' required/>
-</div>
-
-<div className='flex flex-col-4 gap-4'>
-<label htmlFor='description'>Description</label>
-<textarea 
-id='description'
-name='description'
- className='border rounded-md p-2'
- placeholder='enter description'
-required
-/>
-</div>
-<Button type='submit' className='text-sm'>Submit</Button>
-
-</form>
-
-
-
-
-{/* 
 
       <form action="/api/workspaces" method="post" className='flex flex-col gap-4'>
         <input type="hidden" name="_action" value="create" />
@@ -71,7 +45,7 @@ required
         >
           submit
         </button>
-      </form> */}
+      </form>
     </div>
   )
 }
