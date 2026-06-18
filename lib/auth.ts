@@ -94,17 +94,25 @@ export function verifyToken(token: string) {
 }
 
 export async function getUserFromRequest(request: Request) {
-  const cookieHeader = request.headers.get("cookie") || "";
-  const authCookie = cookieHeader
-    .split(";")
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith(`${AUTH_COOKIE_NAME}=`));
+  // check for authorization header first (e.g. bearer <token>)
+  const authHeader = request.headers.get("authorization") || "";
+  let token: string | null = null;
 
-  if (!authCookie) {
-    return null;
+  if (authHeader.startsWith("Bearer ")) {
+    token = authHeader.substring(7);
+  } else {
+    // fallback to cookie if needed
+    const cookieHeader = request.headers.get("cookie") || "";
+    const authCookie = cookieHeader
+      .split(";")
+      .map((cookie) => cookie.trim())
+      .find((cookie) => cookie.startsWith(`${AUTH_COOKIE_NAME}=`));
+
+    if (authCookie) {
+      token = authCookie.split("=")[1];
+    }
   }
 
-  const token = authCookie.split("=")[1];
   if (!token) {
     return null;
   }

@@ -18,6 +18,7 @@ import { Button } from "./ui/button"
 
 import { HelpCircle, Home, Inbox , Newspaper, NewspaperIcon, Paperclip, Settings, Sheet, SquareActivity, SquareCheck, User, User2, Users} from "lucide-react"
 import { check } from "zod"
+import { userAgent } from "next/server"
 
 
 
@@ -31,6 +32,11 @@ const MenuItems = [
         title : "Inbox",
         url : "/",
         icon: Inbox
+    },
+     {
+        title : "Workspace",
+        url : "/workspaces",
+        icon: User
     }
 ]
 const TeamSpaces = [
