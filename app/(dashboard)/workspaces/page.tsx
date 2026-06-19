@@ -1,53 +1,43 @@
-import { Input } from '@/components/ui/input';
-import React from 'react'
-import { Button } from '@/components/ui/button';
+import db from '@/lib/db';
+import { getServerSession } from '@/lib/auth';
+import Link from 'next/link';
+import { CreateWorkspaceForm } from '@/components/workspace/create-workspace-form';
 
-function WorkspacePage() {
+export default async function WorkspacePage() {
+  // get the current logged-in user using the new server component helper
+  const user = await getServerSession();
+
+  // fetch all workspaces this user is a member of
+  let workspaces: any[] = [];
+  if (user) {
+    const userMemberships = await db.workspaceMember.findMany({
+      where: { userId: user.id },
+      include: { workspace: true }
+    });
+    workspaces = userMemberships.map(member => member.workspace);
+  }
+
   return (
-    <div className='w-full px-4 py-6 sm:p-6 max-w-lg mx-auto'>
-      <h2 className='text-xl sm:text-2xl font-semibold mb-4'>create new workspace</h2>
-      {/* basic form to take data */}
+    <div className='w-full px-4 py-6 sm:p-6 max-w-6xl mx-auto'>
+      <h2 className='text-2xl font-semibold mb-6'>my workspaces</h2>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 items-start">
+        {workspaces.map((ws) => (
+          <Link 
+            key={ws.id} 
+            href={`/workspaces/${ws.id}`}
+            className="flex flex-col p-5 border rounded-md hover:border-black transition-colors min-h-[120px] h-full"
+          >
+            <h3 className="font-semibold text-lg">{ws.name}</h3>
+            {ws.description && (
+              <p className="text-sm text-gray-500 mt-2 line-clamp-2">{ws.description}</p>
+            )}
+          </Link>
+        ))}
 
-
-      <form action="/api/workspaces" method="post" className='flex flex-col gap-4'>
-        <input type="hidden" name="_action" value="create" />
-        <div className='flex flex-col gap-2'>
-          <label htmlFor='name' className='font-medium text-sm'>
-            name
-          </label>
-          <input
-            id='name'
-            name='name'
-            type='text'
-            placeholder='enter name'
-            className='border rounded-md px-3 py-2 outline-none focus:ring-2 w-full text-sm sm:text-base'
-            required
-          />
-        </div>
-
-        <div className='flex flex-col gap-2'>
-          <label htmlFor='description' className='font-medium text-sm'>
-            description
-          </label>
-          <textarea
-            id='description'
-            name='description'
-            rows={4}
-            className='border rounded-md px-3 py-2 outline-none focus:ring-2 w-full text-sm sm:text-base'
-            placeholder='enter description'
-            required
-          ></textarea>
-        </div>
-
-        <button
-          type='submit'
-          className='bg-black text-white px-4 py-2 sm:py-2.5 rounded-md hover:bg-gray-800 transition-colors w-full sm:w-auto sm:self-start mt-2 text-sm sm:text-base'
-        >
-          submit
-        </button>
-      </form>
+        {/* create new workspace tile */}
+        <CreateWorkspaceForm />
+      </div>
     </div>
   )
 }
-
-export default WorkspacePage;

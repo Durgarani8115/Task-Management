@@ -1,5 +1,8 @@
+// "use client"
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import prisma from "@/lib/db";
+
+import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const HASH_KEY_LENGTH = 64;
@@ -124,3 +127,23 @@ export async function getUserFromRequest(request: Request) {
     return null;
   }
 }
+
+
+// Use this in Server Components (page.tsx, layout.tsx)
+export async function getServerSession() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+
+  if (!token) return null;
+
+  try {
+    const payload = verifyToken(token);
+    return await prisma.user.findUnique(
+      {
+        where: { id: payload.userId }
+      });
+  } catch {
+    return null;
+  }
+}
+
