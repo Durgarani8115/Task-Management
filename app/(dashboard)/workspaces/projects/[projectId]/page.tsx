@@ -2,90 +2,96 @@ import React from 'react';
 import db from '@/lib/db';
 import { getServerSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { Plus } from 'lucide-react';
+import { Plus, MoreHorizontal } from 'lucide-react';
+import { CreateTaskModal } from '@/components/board/create-task-modal';// using your file name exactly
+import { TaskCard } from '@/components/board/task-card';
 
 type Props = {
   params: Promise<{ projectId: string }>;
 };
 
 export default async function ProjectBoardPage({ params }: Props) {
-  // 1. secure the page
   const user = await getServerSession();
   if (!user) redirect('/sign-in');
 
-  // 2. extract the dynamic project id from the url
   const resolvedParams = await params;
   const projectId = resolvedParams.projectId;
 
-  // 3. fetch the project, its columns, and the tasks inside those columns
   const project = await db.project.findUnique({
     where: { id: projectId },
     include: {
       columns: {
-        orderBy: { position: 'asc' }, // order columns correctly (1, 2, 3)
+        orderBy: { position: 'asc' },
         include: {
           tasks: {
-            orderBy: { position: 'asc' } // order tasks by their position in the column
+            orderBy: { position: 'asc' }
           }
         }
       }
     }
   });
 
-  if (!project) {
-    return <div>project not found</div>;
-  }
+  if (!project) return <div>project not found</div>;
 
   return (
-    <div className='w-full h-full flex flex-col p-6 overflow-hidden'>
+    <div className='w-full h-full flex flex-col p-8 overflow-hidden bg-[#FAFBFC]'>
+      
       {/* project header */}
-      <div className="mb-6 shrink-0">
-        <h1 className='text-3xl font-bold'>{project.name}</h1>
-        {project.description && (
-          <p className="text-gray-500 mt-2">{project.description}</p>
-        )}
+      <div className="mb-6 shrink-0 flex items-center justify-between">
+        <div>
+          <h1 className='text-2xl font-bold text-gray-900'>{project.name}</h1>
+          {project.description && (
+            <p className="text-gray-500 mt-1 text-sm">{project.description}</p>
+          )}
+        </div>
       </div>
 
-      {/* kanban board horizontal scroll container */}
-      <div className="flex-1 overflow-x-auto flex gap-6 pb-4 items-start">
-        {project.columns.map(column => (
-          <div key={column.id} className="w-80 shrink-0 bg-gray-50/50 rounded-lg p-4 flex flex-col max-h-full border">
-            
-            {/* column header */}
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-semibold text-lg">{column.title}</h3>
-              <span className="text-sm bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">
-                {column.tasks.length}
-              </span>
-            </div>
+      {/* kanban board container */}
+      <div className="flex-1 overflow-x-auto flex gap-6 pb-4 items-start scrollbar-thin">
+        {project.columns.map((column, index) => {
+          
+          // give each column a unique dot color like the screenshot
+          const dotColor = index === 0 ? "bg-amber-400" : index === 1 ? "bg-blue-500" : "bg-pink-500";
 
-            {/* task list inside the column */}
-            <div className="flex flex-col gap-3 overflow-y-auto">
-              {column.tasks.map(task => (
-                <div key={task.id} className="bg-white p-3 rounded-md shadow-sm border border-gray-100 hover:border-black transition-colors cursor-grab">
-                  <h4 className="font-medium">{task.title}</h4>
-                  {task.description && (
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">{task.description}</p>
-                  )}
+          return (
+            <div key={column.id} className="w-[320px] shrink-0 bg-[#F4F5F7] rounded-2xl p-4 flex flex-col max-h-full">
+              
+              {/* column header */}
+              <div className="flex justify-between items-center mb-4 px-1">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${dotColor}`}></span>
+                  <h3 className="font-semibold text-gray-700">{column.title}</h3>
+                  <span className="text-xs bg-blue-600 text-white w-5 h-5 flex items-center justify-center rounded-full font-medium ml-1">
+                    {column.tasks.length}
+                  </span>
                 </div>
-              ))}
+                <div className="flex items-center gap-2 text-gray-400">
+                  <button className="hover:text-black"><Plus className="w-4 h-4" /></button>
+                  <button className="hover:text-black"><MoreHorizontal className="w-4 h-4" /></button>
+                </div>
+              </div>
 
-              {/* add task button */}
-              <button className="flex items-center text-sm text-gray-500 hover:text-black mt-2 p-2 rounded-md hover:bg-gray-100 transition-colors">
-                <Plus className="w-4 h-4 mr-1" />
-                add task
-              </button>
+              {/* tasks container */}
+              <div className="flex flex-col gap-3 overflow-y-auto pb-2">
+                {column.tasks.map(task => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
+                
+                {/* this is your add task button/modal! */}
+                <CreateTaskModal columnId={column.id} projectId={project.id} />
+              </div>
+
             </div>
-          </div>
-        ))}
+          );
+        })}
         
-        {/* optional: add column button */}
-        <div className="w-80 shrink-0">
-          <button className="flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg text-gray-500 hover:border-black hover:text-black transition-colors">
-            <Plus className="w-5 h-5 mr-2" />
-            add column
+        {/* add column button */}
+        <div className="w-[320px] shrink-0 mt-1">
+          <button className="flex items-center justify-center w-12 h-12 bg-white border rounded-xl text-gray-400 hover:border-black hover:text-black shadow-sm transition-colors">
+            <Plus className="w-5 h-5" />
           </button>
         </div>
+        
       </div>
     </div>
   );
