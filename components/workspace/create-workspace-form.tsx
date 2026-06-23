@@ -54,10 +54,10 @@ export function CreateWorkspaceForm() {
             name='description'
             rows={3}
             className='border rounded-md px-3 py-2 outline-none focus:ring-2 w-full text-sm sm:text-base'
-            placeholder='enter description (5-20 chars)'
+            placeholder='enter description (5-25 chars)'
             required
             minLength={5}
-            maxLength={20}
+            maxLength={25}
           ></textarea>
         </div>
 

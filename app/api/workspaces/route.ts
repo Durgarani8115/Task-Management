@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { slugify } from "@/lib/utils";
+import { getUserFromRequest } from "@/lib/auth";
+
 export async function POST(request: Request) {
     try {
+        // fetch the logged in user
+        const user = await getUserFromRequest(request);
+        if (!user) {
+            return NextResponse.redirect(new URL('/sign-in', request.url));
+        }
+
         const formData = await request.formData();
         const action = formData.get("_action")?.toString() ?? "create";
         const referer = request.headers.get("referer");
@@ -14,23 +22,15 @@ export async function POST(request: Request) {
             const description = formData.get("description")?.toString().trim();
             if (!name) {
                 return NextResponse.json(
-                    {
-                        message: "Workspace name is required",
-                    },
-                    {
-                        status: 400,
-                    }
+                    { message: "Workspace name is required" },
+                    { status: 400 }
                 );
             }
 
-            if (!description || description.length < 5 || description.length > 20) {
+            if (!description || description.length < 5 || description.length > 25) {
                 return NextResponse.json(
-                    {
-                        message: "Workspace description is required and must be 5 to 20 characters",
-                    },
-                    {
-                        status: 400,
-                    }
+                    { message: "Workspace description is required and must be 5 to 25 characters" },
+                    { status: 400 }
                 );
             }
 
@@ -43,12 +43,8 @@ export async function POST(request: Request) {
 
             if (existingWorkspace) {
                 return NextResponse.json(
-                    {
-                        message: "Workspace name already exists",
-                    },
-                    {
-                        status: 400,
-                    }
+                    { message: "Workspace name already exists" },
+                    { status: 400 }
                 );
             }
 
@@ -57,6 +53,12 @@ export async function POST(request: Request) {
                     name,
                     slug,
                     description,
+                    members: {
+                        create: {
+                            userId: user.id,
+                            role: 'OWNER'
+                        }
+                    }
                 },
             });
 
@@ -73,12 +75,8 @@ export async function POST(request: Request) {
 
             if (!workspaceId || !name) {
                 return NextResponse.json(
-                    {
-                        message: "Missing workspaceId or name",
-                    },
-                    {
-                        status: 400,
-                    }
+                    { message: "Missing workspaceId or name" },
+                    { status: 400 }
                 );
             }
 
@@ -101,12 +99,8 @@ export async function POST(request: Request) {
             const workspaceId = formData.get("workspaceId")?.toString();
             if (!workspaceId) {
                 return NextResponse.json(
-                    {
-                        message: "Workspace ID is required",
-                    },
-                    {
-                        status: 400,
-                    }
+                    { message: "Workspace ID is required" },
+                    { status: 400 }
                 );
             }
 
@@ -114,6 +108,11 @@ export async function POST(request: Request) {
                 where: { workspaceId },
             });
             
+            // need to delete workspace members before deleting the workspace due to foreign key constraints
+            await prisma.workspaceMember.deleteMany({
+                 where: { workspaceId }
+            });
+
             await prisma.workspace.delete({
                 where: { id: workspaceId },
             });
