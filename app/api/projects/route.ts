@@ -58,13 +58,50 @@ export async function GET(request: Request){
     });
     return NextResponse.json(projects);
   }catch(error){
-console.error("fetch project error: ", error);
-return NextResponse.json(
+  console.error("fetch project error: ", error);
+    return NextResponse.json(
   {error: "internal server error"},
   {status: 500}
 );
   }}
 
+
+// creat en new project inside a workspace
+
+export async function POST(request : Request){
+  try{
+    //authenticate the user
+
+    const user = await getUserFromRequest(request);
+    if(!user){
+      return NextResponse.redirect(new URL('/sign-in', request.url));
+    }
+
+    // parse form data
+    const formData = await request.formData();
+    const action = formData.get("_action")?.toString() ?? "cretae";
+  const referer = request.headers.get("referer");
+  const redirecturl = new URL(referer ?? "/", request.url);
+
+  if(action === "create"){
+    const name = formData.get("name")?.toString().trim();
+    const descrption = formData.get("description")?.toString().trim();
+    const workspaceId = formData.get("workspaceId")?.toString();
+
+    if(!name || !workspaceId){
+      return NextResponse.json({
+        eroor: "name and workspace id are required"
+      },
+    {status : 400})
+    };
+
+  }
+
+  
+
+
+  }catch(error){}
+}
 
 
 
