@@ -227,5 +227,89 @@ export async function PUT(request:Request){
   }
 }
 
+//new features 
+
+export async function DELETE(request: Request){
+  try{
+
+    //authenticate
+
+    const user = await getUserFromRequest(request);
+
+      if(!user){
+        return NextResponse.json(
+          {error:"unauthorized"},
+          {status:401}
+        )
+      }
+
+      //get projectId from Query
+
+      const {searchParams} = new URL(request.url);
+
+      const projectId = searchParams.get("projectId");
+
+      if(!projectId){
+        return NextResponse.json(
+          {error: "proejctId is required"},
+          {status: 400}
+        );
+      }
+
+      //find project
+
+      const project = await prisma.project.findUnique({
+        where: {
+          id: projectId,
+        },
+
+      });
+
+      if(!project){
+        return NextResponse.json(
+          {error: "project not found"},
+          {status: 404}
+        );
+      }
+
+      // authorization
+       const membership = await prisma.workspaceMember.findUnique({
+      where: {
+        workspaceId_userId: {
+          workspaceId: project.workspaceId,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (!membership) {
+      return NextResponse.json(
+        { error: "You do not have permission to delete this project" },
+        { status: 403 }
+      );
+    }
+      // 5. Delete
+    await prisma.project.delete({
+      where: {
+        id: projectId,
+      },
+    });
+
+    return NextResponse.json({
+      message: "Project deleted successfully",
+    });
+
+
+    
+
+  }catch(error){
+    console.error("Delete project error",error);
+
+    return NextResponse.json(
+      {error: "internal server error"},
+      {status: 500}
+    );
+  }
+}
 
 
