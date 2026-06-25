@@ -1,4 +1,6 @@
-import React from 'react';
+"use client"
+
+import { useState} from 'react';
 import { Flag, MessageSquare, Link2, MoreHorizontal } from 'lucide-react';
 import Image from 'next/image';
 
@@ -19,14 +21,18 @@ function getPriorityColor(priority: string) {
 
 // helper to get tag styling based on text
 function getTagStyle(tag: string) {
-  if (tag === 'Not Started') return 'text-indigo-600 bg-indigo-50';
-  if (tag === 'In Research') return 'text-amber-600 bg-amber-50';
-  if (tag === 'On Track') return 'text-pink-600 bg-pink-50';
-  if (tag === 'Complete') return 'text-emerald-600 bg-emerald-50';
+  if (tag === 'Not Started') return 'text-indigo-600 bg-indigo-50 font-semibold';
+  if (tag === 'In Research') return 'text-amber-600 bg-amber-50 font-semibold';
+  if (tag === 'On Track') return 'text-pink-600 bg-pink-50 font-semibold';
+  if (tag === 'Complete') return 'text-emerald-600 bg-emerald-50 font-semibold';
   return 'text-gray-600 bg-gray-50';
 }
 
 export function TaskCard({ task }: TaskCardProps) {
+
+  const [openComments, setOpenComments] = useState(false);
+
+
   // Mock tags based on the screenshot since we don't have tags in the DB yet
   const tagText = task.position % 2 === 0 ? "In Research" : "Not Started"; 
   
@@ -80,10 +86,12 @@ export function TaskCard({ task }: TaskCardProps) {
 
       {/* Bottom stats */}
       <div className="flex items-center gap-4 text-xs text-gray-400 font-medium border-t border-gray-50 pt-3 mt-1">
-        <div className="flex items-center gap-1">
-          <MessageSquare className="w-3.5 h-3.5" />
-          no Comments
-        </div>
+        <button 
+        className='flex items-center gap-1 hover:text-black cursor-pointer ' 
+        // onClick={() => setOpenComments(true)}
+        >
+          <MessageSquare className='w-3.5 h-3.5' />
+        </button>
         <div className="flex items-center gap-1">
           <Link2 className="w-3.5 h-3.5" />
           1 Links
