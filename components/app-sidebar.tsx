@@ -12,103 +12,46 @@ import {
     SidebarGroupContent,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import Image from "next/image"
-import { Button } from "./ui/button"
-
-
-import { HelpCircle, Home, Inbox, Newspaper, NewspaperIcon, Paperclip, Settings, Sheet, SquareActivity, SquareCheck, User, User2, Users } from "lucide-react"
-import { check } from "zod"
-import { userAgent } from "next/server"
+import db from "@/lib/db";
 import { getServerSession } from "@/lib/auth"
-
-
-
-const MenuItems = [
-    {
-        title: "Dashboard",
-        url: "/",
-        icon: Home
-    },
-    {
-        title: "Inbox",
-        url: "/",
-        icon: Inbox
-    },
-    {
-        title: "Workspace",
-        url: "/workspaces",
-        icon: User
-    }
-]
-const TeamSpaces = [
-    {
-        title: "Tasks",
-        url: '/',
-        icon: SquareCheck
-
-    },
-    {
-        title: "Docs",
-        url: '/',
-        icon: Newspaper
-
-    },
-    {
-        title: "Meetings",
-        url: '/',
-        icon: Users
-
-    }
-]
-
-const Other = [
-    {
-        title: "Settings",
-        url: "/",
-        icon: Settings
-
-    },
-    {
-        title: "Support",
-        url: "/",
-        icon: HelpCircle
-
-    },
-
-]
-
-const SidebarSection = [
-    {
-        label: "Menu",
-        items: MenuItems
-    },
-    {
-        label: "Team Spaces",
-        items: TeamSpaces
-
-    },
-    {
-        label: "Settings ",
-        items: Other
-    }
-]
+import { Home, Settings, Briefcase, FolderKanban, LayoutGrid, LogOut } from "lucide-react";
+import SidebarProjectsList from "@/components/dashboard/sidebar-projects-list";
 
 export async function AppSidebar() {
+    // get current logged in user session
     const user = await getServerSession()
 
+    // fetch all workspaces this user is a member of, along with their projects
+    let workspaces: any[] = [];
+    if (user) {
+        const userMemberships = await db.workspaceMember.findMany({
+            where: { userId: user.id },
+            include: { 
+                workspace: {
+                    include: {
+                        projects: {
+                            orderBy: { createdAt: 'desc' }
+                        }
+                    }
+                } 
+            }
+        });
+        workspaces = userMemberships.map(member => member.workspace);
+    }
+
     return (
-        <Sidebar collapsible="icon">
-            <SidebarHeader>
+        <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar">
+            <SidebarHeader className="bg-sidebar">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
-                            <Link href="/" className="flex items-center gap-2 h-auto py-2" >
-                                <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center font-semibold shrink-0">
-                                    {user?.name?.charAt(0).toUpperCase() || "U"}
+                            <Link href="/dashboard" className="flex items-center gap-3 h-auto py-2.5" >
+                                <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0 shadow-sm">
+                                    <LayoutGrid className="w-4 h-4" />
                                 </div>
-                                <div className="flex flex-col items-start text-sm overflow-hidden">
-                                    <span className="font-semibold truncate">{user?.name || 'Guest'}</span>
-                                    <span className="text-xs text-gray-500 truncate">{user?.email || 'Not logged in'}</span>
+                                <div className="flex flex-col items-start overflow-hidden">
+                                    <span className="font-bold text-sm text-foreground tracking-tight">TaskFlow Pro</span>
+                                    <span className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase">SaaS Enterprise</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
@@ -116,41 +59,61 @@ export async function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarSeparator className="mx-0" />
-            <SidebarContent>
-                {/* section of sidebar */}
-                {SidebarSection.map((section) => (
-                    <SidebarGroup key={section.label}>
-                        <SidebarGroupLabel>
-                            {section.label}
-                        </SidebarGroupLabel>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
-                                {section.items.map((item) => (
-                                    <SidebarMenuItem key={item.title}>
-                                        <SidebarMenuButton>
-                                            <Link
-                                                href={item.url}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <item.icon />
-                                                <span>{item.title}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))}
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                ))}
+            <SidebarSeparator className="mx-0 bg-sidebar-border opacity-50" />
+            
+            <SidebarContent className="scrollbar-thin bg-sidebar">
+                {/* 1. core workspace section */}
+                <SidebarGroup>
+                    <SidebarGroupLabel className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Workspace</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild>
+                                    <Link href="/dashboard" className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors">
+                                        <Home className="w-4.5 h-4.5" />
+                                        <span className="text-sm font-medium">Dashboard</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild>
+                                    <Link href="/workspaces" className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors">
+                                        <Settings className="w-4.5 h-4.5" />
+                                        <span className="text-sm font-medium">Workspaces Settings</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
 
+                {/* 2. dynamic active workspace projects */}
+                <SidebarProjectsList workspaces={workspaces} />
             </SidebarContent>
 
-            <SidebarFooter>
-                {/* WORK IN FOOTER CONTENT */}
+            <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-3">
                 <SidebarMenu>
                     <SidebarMenuItem>
-
+                        <div className="flex items-center justify-between w-full px-2 py-1.5">
+                            <div className="flex items-center gap-2.5 overflow-hidden">
+                                <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+                                    {user?.name?.charAt(0).toUpperCase() || "U"}
+                                </div>
+                                <div className="flex flex-col overflow-hidden text-left">
+                                    <span className="text-xs font-semibold text-foreground truncate">{user?.name || "Guest User"}</span>
+                                    <span className="text-[10px] text-muted-foreground truncate">{user?.email || "guest@taskflow.com"}</span>
+                                </div>
+                            </div>
+                            <form action="/api/auth/logout" method="POST" className="shrink-0">
+                                <button
+                                    type="submit"
+                                    aria-label="Logout"
+                                    className="p-1.5 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 rounded-md hover:bg-secondary transition-colors cursor-pointer"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                </button>
+                            </form>
+                        </div>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>

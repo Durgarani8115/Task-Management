@@ -2,52 +2,52 @@ import Link from "next/link";
 
 export default function SignUpPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-semibold text-slate-900">Create an account</h1>
+    <main className="min-h-screen flex items-center justify-center bg-background p-4 text-foreground">
+      <div className="w-full max-w-md minimal-card p-8">
+        <h1 className="text-2xl font-bold">Create an account</h1>
 
         <form action="/api/auth/signup" method="post" className="mt-6 space-y-4">
           <label className="block">
-            <span className="text-sm text-slate-700">Name</span>
+            <span className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">Name</span>
             <input
               name="name"
               type="text"
               required
-              className="mt-2 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="mt-2 w-full minimal-panel px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring/20"
             />
           </label>
 
           <label className="block">
-            <span className="text-sm text-slate-700">Email</span>
+            <span className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">Email</span>
             <input
               name="email"
               type="email"
               required
-              className="mt-2 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="mt-2 w-full minimal-panel px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring/20"
             />
           </label>
 
           <label className="block">
-            <span className="text-sm text-slate-700">Password</span>
+            <span className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">Password</span>
             <input
               name="password"
               type="password"
               required
-              className="mt-2 w-full rounded-2xl border px-4 py-3 text-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+              className="mt-2 w-full minimal-panel px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-ring/20"
             />
           </label>
 
           <button
             type="submit"
-            className="w-full rounded-2xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white hover:bg-violet-700"
+            className="w-full minimal-btn-primary py-3 text-sm"
           >
             Create account
           </button>
         </form>
 
-        <p className="mt-6 text-sm text-slate-500">
+        <p className="mt-6 text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link href="/sign-in" className="font-medium text-violet-600 hover:underline">
+          <Link href="/sign-in" className="font-semibold text-primary hover:underline">
             Sign in
           </Link>
         </p>

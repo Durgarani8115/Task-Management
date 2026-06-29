@@ -26,11 +26,11 @@ export default async function WorkspacePage() {
           <Link 
             key={ws.id} 
             href={`/workspaces/${ws.id}`}
-            className="flex flex-col p-5 border rounded-md hover:border-black transition-colors min-h-[120px] h-full"
+            className="flex flex-col p-5 border border-border bg-card text-card-foreground rounded-lg hover:border-primary transition-colors min-h-[120px] h-full cursor-pointer"
           >
-            <h3 className="font-semibold text-lg">{ws.name}</h3>
+            <h3 className="font-semibold text-lg text-foreground">{ws.name}</h3>
             {ws.description && (
-              <p className="text-sm text-gray-500 mt-2 line-clamp-2">{ws.description}</p>
+              <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{ws.description}</p>
             )}
           </Link>
         ))}

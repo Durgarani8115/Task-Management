@@ -1,49 +1,54 @@
-// import { CircleHelp, Search } from "lucide-react"
-// import { Bell } from "lucide-react"
-// export default function TopHeader() {
-//     return (
-//         <header className="h-16 border-b bg-white px-2  flex items-center justify-end">
-//             <div className="flex items-center gap-2 ">
-//                 {/*top header   */}
-//                 <div className="relative">
-//                     <Search
-//                         className="absolute left-3 top-1/2 
-//                         -translate-y-1/2 text-gray-400"
-//                         size={16}
-//                     />
-
-//                     <input
-//                         type="text" placeholder="Search"
-//                         className="w-72 h-10 rounded-lg border pl-8 py-1 pr-2 focus:ring-2 outline-none focus:ring-violet-500"
-//                     />
-//                 </div>
-
-//                 {/* support */}
-//                 <div>
-//                     <button className="h-10 w-10 rounded-lg border flex items-center justify-center hover:bg-gray-100">
-//                         <CircleHelp size={16} />
-//                     </button>
-//                 </div>
-//                 {/* help */}
-//                 <div>
-//                     <button className="h-10 w-10 rounded-lg border flex items-center justify-center hover:bg-gray-100">
-//                         <Bell size={16} />
-//                     </button>
-//                 </div>
-
-//             </div>
-//         </header>
-//     )
-// }
 import { CircleHelp, Search, Bell } from "lucide-react";
+import db from "@/lib/db";
+import { getServerSession } from "@/lib/auth";
+import DashboardSelector from "@/components/dashboard/dashboard-selector";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeToggle } from "./theme-toggle";
 
-export default function TopHeader() {
+export default async function TopHeader() {
+  const user = await getServerSession();
+
+  let workspaces: any[] = [];
+  if (user) {
+    const userMemberships = await db.workspaceMember.findMany({
+      where: { userId: user.id },
+      include: {
+        workspace: {
+          include: {
+            projects: {
+              orderBy: { createdAt: 'desc' }
+            }
+          }
+        }
+      }
+    });
+
+    workspaces = userMemberships.map((m) => ({
+      id: m.workspace.id,
+      name: m.workspace.name,
+      projects: m.workspace.projects.map((p) => ({
+        id: p.id,
+        name: p.name,
+      })),
+    }));
+  }
+
   return (
-    <header className="sticky top-0 z-50 h-16 border-b bg-white/95 backdrop-blur-xl px-4 shadow-sm">
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-end gap-3">
-        <div className="relative w-full max-w-sm">
+    <header className="bg-white dark:bg-zinc-950 h-14 border-b border-slate-200 dark:border-zinc-800 px-6 flex items-center justify-between shrink-0">
+      {/* left side: sidebar trigger, workspace and project selectors */}
+      <div className="flex items-center gap-4">
+        <SidebarTrigger className="text-slate-500 hover:text-slate-900" />
+        
+        {workspaces.length > 0 && (
+          <DashboardSelector workspaces={workspaces} />
+        )}
+      </div>
+
+      {/* right side: search and action buttons */}
+      <div className="flex items-center gap-3">
+        <div className="relative w-full max-w-xs sm:max-w-sm hidden sm:block">
           <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
             size={16}
           />
 
@@ -51,14 +56,16 @@ export default function TopHeader() {
             type="search"
             aria-label="Search tasks"
             placeholder="Search"
-            className="w-full rounded-2xl border border-slate-200 bg-white py-2 pl-10 pr-3 text-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
+            className="w-full bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-md py-1.5 pl-10 pr-3 text-sm outline-none transition focus:border-slate-400 focus:bg-white dark:focus:bg-zinc-950"
           />
         </div>
+
+        <ThemeToggle />
 
         <button
           type="button"
           aria-label="Help"
-          className="grid h-9 w-9 place-items-center rounded-md border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
+          className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md grid h-8 w-8 place-items-center transition-colors"
         >
           <CircleHelp size={18} />
         </button>
@@ -66,7 +73,7 @@ export default function TopHeader() {
         <button
           type="button"
           aria-label="Notifications"
-          className="grid h-9 w-9 place-items-center rounded-md border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-100"
+          className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md grid h-8 w-8 place-items-center transition-colors"
         >
           <Bell size={18} />
         </button>

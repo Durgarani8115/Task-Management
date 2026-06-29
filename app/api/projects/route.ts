@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
-import { error } from "console";
 
 
-//get all project for a workspaces (pass workspace id as querry param)
+// get all projects for a workspace (pass workspace id as query param)
 export async function GET(request: Request){
   try{
     // authenticate the user
@@ -15,7 +14,7 @@ export async function GET(request: Request){
 
     }
 
-    //get workspaceid from query params
+    // get workspace id from query params
 
     const {searchParams} = new URL(request.url);
     const workspaceId = searchParams.get("workspaceId");
@@ -26,7 +25,7 @@ export async function GET(request: Request){
         {status: 400}
       );
     }
-    // chk oif the user is a member of workspces
+    // check if the user is a member of the workspace
 
     const membership = await prisma.workspaceMember.findUnique({
       where:{
@@ -43,7 +42,7 @@ export async function GET(request: Request){
          , {status: 403}
       )
     };
-    //fetchh all projects with thier colmns and task count 
+    // fetch all projects with their columns and task count 
 
     const projects = await prisma.project.findMany({
       where : {workspaceId},
@@ -68,11 +67,11 @@ export async function GET(request: Request){
 }
 
 
-// creat en new project inside a workspace
+// create a new project inside a workspace
 
 export async function POST(request : Request){
   try{
-    //authenticate the user
+    // authenticate the user
 
     const user = await getUserFromRequest(request);
     if(!user){
@@ -81,7 +80,7 @@ export async function POST(request : Request){
 
     // parse form data
     const formData = await request.formData();
-    const action = formData.get("_action")?.toString() ?? "cretae";
+    const action = formData.get("_action")?.toString() ?? "create";
   const referer = request.headers.get("referer");
   const redirecturl = new URL(referer ?? "/", request.url);
 
@@ -92,13 +91,13 @@ export async function POST(request : Request){
 
     if(!name || !workspaceId){
       return NextResponse.json({
-        eroor: "name and workspace id are required"
+        error: "name and workspace id are required"
       },
     {status : 400})
     };
 
   
-  //authorize : chk if user is a member of the workspace
+  // authorize: check if user is a member of the workspace
 
    const membership = await prisma.workspaceMember.findUnique({
         where: {
@@ -114,9 +113,7 @@ export async function POST(request : Request){
 
   }
 
-  //database transaction - create project and default columns
-
-    // 4. database transaction: create project and default columns together
+  // database transaction: create project and default columns together
       await prisma.$transaction(async (tx) => {
         // create the project record
         const project = await tx.project.create({
@@ -127,7 +124,7 @@ export async function POST(request : Request){
           },
         });
 
-    // create defualt columns for the new project
+    // create default columns for the new project
 
     await tx.taskColumn.createMany({
       data:[
@@ -153,7 +150,7 @@ catch(error){
 
 export async function PUT(request:Request){
   try{
-    //authenticate user
+    // authenticate user
     const user = await getUserFromRequest(request);
 
     if(!user){
@@ -163,7 +160,7 @@ export async function PUT(request:Request){
       );
     }
 
-    //get request body
+    // get request body
 
     const {projectId,name, description} = await request.json();
 
@@ -173,7 +170,7 @@ export async function PUT(request:Request){
         {status : 400}
       );
     }
-    //find project
+    // find project
 
     const project = await prisma.project.findUnique({
       where : {
@@ -187,7 +184,7 @@ export async function PUT(request:Request){
       );
     }
 
-    // authorization
+    // authorization: check workspace membership
 
     const membership = await prisma.workspaceMember.findUnique({
      where: {
@@ -204,7 +201,7 @@ export async function PUT(request:Request){
         {status: 403}
       )
     }
-    //update
+    // update project
 
     const UpdatedProject = await prisma.project.update({
       where:{
@@ -227,12 +224,12 @@ export async function PUT(request:Request){
   }
 }
 
-//new features 
+// delete project and all its related child data
 
 export async function DELETE(request: Request){
   try{
 
-    //authenticate
+    // authenticate
 
     const user = await getUserFromRequest(request);
 
@@ -243,7 +240,7 @@ export async function DELETE(request: Request){
         )
       }
 
-      //get projectId from Query
+      // get projectId from query params
 
       const {searchParams} = new URL(request.url);
 
@@ -251,12 +248,12 @@ export async function DELETE(request: Request){
 
       if(!projectId){
         return NextResponse.json(
-          {error: "proejctId is required"},
+          {error: "projectId is required"},
           {status: 400}
         );
       }
 
-      //find project
+      // find project
 
       const project = await prisma.project.findUnique({
         where: {
@@ -272,7 +269,7 @@ export async function DELETE(request: Request){
         );
       }
 
-      // authorization
+      // authorization: check workspace membership
        const membership = await prisma.workspaceMember.findUnique({
       where: {
         workspaceId_userId: {
@@ -284,26 +281,39 @@ export async function DELETE(request: Request){
 
     if (!membership) {
       return NextResponse.json(
-        { error: "You do not have permission to delete this project" },
+        { error: "you do not have permission to delete this project" },
         { status: 403 }
       );
     }
-      // 5. Delete
-    await prisma.project.delete({
-      where: {
-        id: projectId,
-      },
+
+    // delete everything in a transaction because there are no cascade deletes in schema
+    // delete child records first, then parents
+    await prisma.$transaction(async (tx) => {
+      // delete task-level children first (comments, checklists, attachments, activity logs, assignees, task-tags)
+      await tx.comment.deleteMany({ where: { task: { projectId } } });
+      await tx.checklistItem.deleteMany({ where: { task: { projectId } } });
+      await tx.attachment.deleteMany({ where: { task: { projectId } } });
+      await tx.activityLog.deleteMany({ where: { task: { projectId } } });
+      await tx.taskAssignee.deleteMany({ where: { task: { projectId } } });
+      await tx.taskTag.deleteMany({ where: { task: { projectId } } });
+
+      // delete tasks
+      await tx.task.deleteMany({ where: { projectId } });
+
+      // delete tags and columns
+      await tx.tag.deleteMany({ where: { projectId } });
+      await tx.taskColumn.deleteMany({ where: { projectId } });
+
+      // finally delete the project itself
+      await tx.project.delete({ where: { id: projectId } });
     });
 
     return NextResponse.json({
-      message: "Project deleted successfully",
+      message: "project deleted successfully",
     });
 
-
-    
-
   }catch(error){
-    console.error("Delete project error",error);
+    console.error("delete project error",error);
 
     return NextResponse.json(
       {error: "internal server error"},
