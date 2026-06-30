@@ -16,7 +16,6 @@ import db from "@/lib/db";
 import { getServerSession } from "@/lib/auth"
 import { Home, Settings, Briefcase, FolderKanban, LayoutGrid, LogOut } from "lucide-react";
 import SidebarProjectsList from "@/components/dashboard/sidebar-projects-list";
-import Image from "next/image";
 
 export async function AppSidebar() {
     // get current logged in user session
@@ -48,11 +47,9 @@ export async function AppSidebar() {
                         <SidebarMenuButton asChild>
                             <Link href="/dashboard" className="flex items-center gap-3 h-auto py-2.5" >
                                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-sidebar-border shadow-sm bg-black/10 dark:bg-white/5">
-                                    <Image
+                                    <img
                                         src="/clove-logoo.png"
                                         alt="Clove Icon"
-                                        width={80}
-                                        height={80}
                                         className="max-w-none w-20 h-auto object-cover object-left"
                                     />
                                 </div>
