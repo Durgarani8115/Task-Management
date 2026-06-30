@@ -29,10 +29,12 @@ type Props = {
   initialColumns: Column[];
   projectId: string;
   members?: any[];
+  permissions?: string[];
 };
 
-export function KanbanBoard({ initialColumns, projectId, members }: Props) {
+export function KanbanBoard({ initialColumns, projectId, members, permissions = [] }: Props) {
   const [columns, setColumns] = useState<Column[]>(initialColumns);
+  const [activeDragCol, setActiveDragCol] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Keep local state in sync when server data changes
@@ -42,6 +44,9 @@ export function KanbanBoard({ initialColumns, projectId, members }: Props) {
 
   const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
+    const canEdit = permissions.includes("canEditTask");
+    if (!canEdit) return;
+
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
 
@@ -133,16 +138,32 @@ export function KanbanBoard({ initialColumns, projectId, members }: Props) {
 
             {/* tasks container */}
             <div
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => handleDrop(e, column.id)}
-              className="flex flex-col gap-3 overflow-y-auto pb-2 min-h-[250px]"
+              onDragOver={(e) => {
+                e.preventDefault();
+                const canEdit = permissions.includes("canEditTask");
+                if (canEdit) {
+                  setActiveDragCol(column.id);
+                }
+              }}
+              onDragLeave={() => {
+                setActiveDragCol(null);
+              }}
+              onDrop={(e) => {
+                setActiveDragCol(null);
+                handleDrop(e, column.id);
+              }}
+              className={`flex flex-col gap-3 overflow-y-auto pb-2 min-h-[250px] transition-all duration-200 rounded-lg p-1 ${
+                activeDragCol === column.id ? "bg-primary/5 border border-dashed border-primary/35 p-2" : ""
+              }`}
             >
               {column.tasks.map((task) => (
-                <TaskCard key={task.id} task={task} columns={columns} members={members} columnTitle={column.title} />
+                <TaskCard key={task.id} task={task} columns={columns} members={members} columnTitle={column.title} permissions={permissions} />
               ))}
 
               {/* add task button/modal */}
-              <CreateTaskModal columnId={column.id} projectId={projectId} />
+              {permissions.includes("canCreateTask") && (
+                <CreateTaskModal columnId={column.id} projectId={projectId} />
+              )}
             </div>
           </div>
         );

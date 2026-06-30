@@ -3,6 +3,7 @@
 import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "@/lib/auth";
+import { hasPermission } from "@/lib/rbac";
 
 export async function updateTaskAction(formData: FormData) {
   const user = await getServerSession();
@@ -18,6 +19,15 @@ export async function updateTaskAction(formData: FormData) {
   const columnId = formData.get("columnId")?.toString();
   const assigneeId = formData.get("assigneeId")?.toString();
 
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: { project: true }
+  });
+  if (!task) throw new Error("Task not found");
+
+  const isAllowed = await hasPermission(user.id, task.project.workspaceId, "canEditTask");
+  if (!isAllowed) throw new Error("You do not have permission to edit tasks in this workspace.");
+
   await prisma.task.update({
     where: { id: taskId },
     data: {
@@ -31,6 +41,8 @@ export async function updateTaskAction(formData: FormData) {
 
   // handle task assignee updates
   if (assigneeId !== undefined) {
+    const canAssign = await hasPermission(user.id, task.project.workspaceId, "canAssignTask");
+    if (!canAssign) throw new Error("You do not have permission to assign tasks in this workspace.");
     // delete current assignees
     await prisma.taskAssignee.deleteMany({
       where: { taskId },
@@ -68,6 +80,14 @@ export async function createTaskAction(formData: FormData) {
     throw new Error("Missing required fields");
   }
 
+  const project = await prisma.project.findUnique({
+    where: { id: projectId }
+  });
+  if (!project) throw new Error("Project not found");
+
+  const isAllowed = await hasPermission(user.id, project.workspaceId, "canCreateTask");
+  if (!isAllowed) throw new Error("You do not have permission to create tasks in this workspace.");
+
   const existingTasksCount = await prisma.task.count({
     where: { columnId }
   });
@@ -99,6 +119,15 @@ export async function moveTaskAction(taskId: string, targetColumnId: string) {
   if (!taskId || !targetColumnId) {
     throw new Error("Missing task ID or target column ID");
   }
+
+  const taskExist = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: { project: true }
+  });
+  if (!taskExist) throw new Error("Task not found");
+
+  const isAllowed = await hasPermission(user.id, taskExist.project.workspaceId, "canEditTask");
+  if (!isAllowed) throw new Error("You do not have permission to move tasks in this workspace.");
 
   // Update task's column in the database
   const task = await prisma.task.update({

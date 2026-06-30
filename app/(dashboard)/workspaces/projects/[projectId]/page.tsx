@@ -4,6 +4,7 @@ import { getServerSession } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { EditProjectModal } from '@/components/project/edit-project-modal';
 import { KanbanBoard } from '@/components/board/kanban-board';
+import { getMemberPermissions } from '@/lib/rbac';
 
 type Props = {
   params: Promise<{ projectId: string }>;
@@ -52,6 +53,10 @@ export default async function ProjectBoardPage({ params }: Props) {
   });
   const members = workspaceMembers.map(m => m.user);
 
+  // fetch user permissions for the current workspace
+  const permissions = await getMemberPermissions(user.id, project.workspaceId);
+  const canManageProject = permissions.includes("canManageProject");
+
   return (
     <div className='w-full h-full flex flex-col p-4 sm:p-8 overflow-hidden'>
       
@@ -63,11 +68,11 @@ export default async function ProjectBoardPage({ params }: Props) {
             <p className="text-muted-foreground mt-1 text-sm">{project.description}</p>
           )}
         </div>
-        <EditProjectModal project={project} />
+        {canManageProject && <EditProjectModal project={project} />}
       </div>
 
       {/* kanban board container */}
-      <KanbanBoard initialColumns={project.columns} projectId={project.id} members={members} />
+      <KanbanBoard initialColumns={project.columns} projectId={project.id} members={members} permissions={permissions} />
       
     </div>
   );

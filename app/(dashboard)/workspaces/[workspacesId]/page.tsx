@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { CreateProjectForm } from '@/components/project/project-form';
 import { EditWorkspaceModal } from '@/components/workspace/edit-workspace-modal';
+import { ManageMembersModal } from '@/components/workspace/manage-members-modal';
+import { getMemberPermissions } from '@/lib/rbac';
 
 type Props = {
   params: Promise<{ workspacesId: string }>;
@@ -33,6 +35,28 @@ export default async function WorkspaceDetailPage({ params }: Props) {
     return <div>workspace not found</div>;
   }
 
+  // fetch user permissions for the current workspace
+  const permissions = await getMemberPermissions(user.id, workspaceId);
+  const canManageWorkspace = permissions.includes("canManageWorkspace");
+  const canManageProject = permissions.includes("canManageProject");
+
+  // fetch workspace members and all available roles
+  const workspaceMembers = await db.workspaceMember.findMany({
+    where: { workspaceId },
+    include: {
+      user: {
+        select: { id: true, name: true, email: true }
+      },
+      roleRef: {
+        select: { id: true, name: true }
+      }
+    }
+  });
+
+  const allRoles = await db.role.findMany({
+    orderBy: { name: 'asc' }
+  });
+
   const projects = workspace.projects || [];
 
   return (
@@ -44,7 +68,12 @@ export default async function WorkspaceDetailPage({ params }: Props) {
             <p className="text-muted-foreground mt-2">{workspace.description}</p>
           )}
         </div>
-        <EditWorkspaceModal workspace={workspace} />
+        {canManageWorkspace && (
+          <div className="flex gap-3 shrink-0">
+            <ManageMembersModal workspaceId={workspace.id} members={workspaceMembers} roles={allRoles} currentUserId={user.id} />
+            <EditWorkspaceModal workspace={workspace} />
+          </div>
+        )}
       </div>
 
       <h2 className='text-xl font-bold mb-6 text-foreground uppercase tracking-wider'>Projects</h2>
@@ -65,7 +94,7 @@ export default async function WorkspaceDetailPage({ params }: Props) {
         ))}
 
         {/* create new project tile */}
-        <CreateProjectForm workspaceId={workspace.id} />
+        {canManageProject && <CreateProjectForm workspaceId={workspace.id} />}
       </div>
     </div>
   )

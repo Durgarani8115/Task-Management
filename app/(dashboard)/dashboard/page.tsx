@@ -8,6 +8,7 @@ import { AnalyticsChart } from '@/components/dashboard/analytics-chart';
 import { CreateTaskModal } from '@/components/board/create-task-modal';
 import { TaskCard } from '@/components/board/task-card';
 import { KanbanBoard } from '@/components/board/kanban-board';
+import { getMemberPermissions } from '@/lib/rbac';
 
 type Props = {
   searchParams: Promise<{
@@ -77,6 +78,7 @@ export default async function DashboardPage({ searchParams }: Props) {
 
   // fetch workspace members to allow assigning tasks
   let members: any[] = [];
+  let permissions: string[] = [];
   if (project) {
     const workspaceMembers = await db.workspaceMember.findMany({
       where: { workspaceId: project.workspaceId },
@@ -87,11 +89,12 @@ export default async function DashboardPage({ searchParams }: Props) {
       }
     });
     members = workspaceMembers.map(m => m.user);
+    permissions = await getMemberPermissions(user.id, project.workspaceId);
   }
 
   // calculate summary statistics across all user workspaces for the default view
   const totalProjectsCount = workspaces.reduce((sum, w) => sum + w.projects.length, 0);
-  
+
   // count total tasks assigned/accessible to user
   const totalTasksCount = await db.task.count({
     where: {
@@ -219,7 +222,7 @@ export default async function DashboardPage({ searchParams }: Props) {
             </div>
           </div>
 
-          <KanbanBoard initialColumns={project.columns} projectId={project.id} members={members} />
+          <KanbanBoard initialColumns={project.columns} projectId={project.id} members={members} permissions={permissions} />
         </div>
       ) : (
         /* enterprise dashboard overview layout */
@@ -366,11 +369,11 @@ export default async function DashboardPage({ searchParams }: Props) {
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-wider mb-2">
                   Analytics & Priorities
                 </h3>
-                
-                <AnalyticsChart 
-                  activeCount={totalTasksCount} 
-                  completedCount={completedTasksCount} 
-                  urgentCount={urgentTasksCount} 
+
+                <AnalyticsChart
+                  activeCount={totalTasksCount}
+                  completedCount={completedTasksCount}
+                  urgentCount={urgentTasksCount}
                 />
 
                 <div className="space-y-4 mt-6">

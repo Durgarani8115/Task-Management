@@ -1,6 +1,7 @@
 import { getUserFromRequest } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { hasPermission } from "@/lib/rbac";
 
 
 export async function POST(request: Request) {
@@ -27,6 +28,19 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {error : "mising required fields"},
       {status : 400});
+    }
+
+    // verify permission to create task
+    const project = await prisma.project.findUnique({
+      where: { id: projectId }
+    });
+    if (!project) {
+      return NextResponse.json({ error: "project not found" }, { status: 404 });
+    }
+
+    const isAllowed = await hasPermission(user.id, project.workspaceId, "canCreateTask");
+    if (!isAllowed) {
+      return NextResponse.json({ error: "you do not have permission to create tasks in this workspace" }, { status: 403 });
     }
 
     // calculating the next postion within the column

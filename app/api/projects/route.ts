@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
+import { hasPermission } from "@/lib/rbac";
 
 
 // get all projects for a workspace (pass workspace id as query param)
@@ -99,19 +100,11 @@ export async function POST(request : Request){
   
   // authorize: check if user is a member of the workspace
 
-   const membership = await prisma.workspaceMember.findUnique({
-        where: {
-          workspaceId_userId: {
-            workspaceId ,
-            userId: user.id,
-          },
-        },
-      });
-  if(!membership){
-    return NextResponse.json({error:"you do not have permission to create projects in this workspace" },
-          { status: 403 });
-
-  }
+   const isAllowed = await hasPermission(user.id, workspaceId, "canManageProject");
+   if(!isAllowed){
+     return NextResponse.json({error:"you do not have permission to create projects in this workspace" },
+           { status: 403 });
+   }
 
   // database transaction: create project and default columns together
       await prisma.$transaction(async (tx) => {
@@ -186,21 +179,13 @@ export async function PUT(request:Request){
 
     // authorization: check workspace membership
 
-    const membership = await prisma.workspaceMember.findUnique({
-     where: {
-        workspaceId_userId: {
-          workspaceId: project.workspaceId,
-          userId: user.id,
-        },
-      },
-    });
-
-    if(!membership){
-      return NextResponse.json(
-        {error: "you do not have permission to update"},
-        {status: 403}
-      )
-    }
+     const isAllowed = await hasPermission(user.id, project.workspaceId, "canManageProject");
+     if(!isAllowed){
+       return NextResponse.json(
+         {error: "you do not have permission to update"},
+         {status: 403}
+       )
+     }
     // update project
 
     const UpdatedProject = await prisma.project.update({
@@ -270,21 +255,13 @@ export async function DELETE(request: Request){
       }
 
       // authorization: check workspace membership
-       const membership = await prisma.workspaceMember.findUnique({
-      where: {
-        workspaceId_userId: {
-          workspaceId: project.workspaceId,
-          userId: user.id,
-        },
-      },
-    });
-
-    if (!membership) {
-      return NextResponse.json(
-        { error: "you do not have permission to delete this project" },
-        { status: 403 }
-      );
-    }
+     const isAllowed = await hasPermission(user.id, project.workspaceId, "canManageProject");
+     if (!isAllowed) {
+       return NextResponse.json(
+         { error: "you do not have permission to delete this project" },
+         { status: 403 }
+       )
+     }
 
     // delete everything in a transaction because there are no cascade deletes in schema
     // delete child records first, then parents

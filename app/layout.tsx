@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Task Management",
-  description: "Task board with reusable layout and sticky header",
+  title: "Clove",
+  description: "A minimalist, collaborative workspace built for planning tasks, tracking progress, and keeping your team aligned on goals.",
 };
 
 export default function RootLayout({

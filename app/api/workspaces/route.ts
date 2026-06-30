@@ -52,13 +52,22 @@ export async function POST(request: Request) {
             return NextResponse.json({ message: "Workspace name already exists" }, { status: 400 });
         }
 
+        const adminRole = await prisma.role.findFirst({ where: { name: 'Admin' } });
+        if (!adminRole) {
+            return NextResponse.json({ message: "System default roles are missing. Please run seed script." }, { status: 500 });
+        }
+
         const newWorkspace = await prisma.workspace.create({
             data: {
                 name,
                 slug,
                 description,
                 members: {
-                    create: { userId: user.id, role: 'OWNER' }
+                    create: { 
+                        userId: user.id, 
+                        role: 'OWNER',
+                        roleId: adminRole.id
+                    }
                 }
             },
         });

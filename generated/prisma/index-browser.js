@@ -138,10 +138,28 @@ exports.Prisma.WorkspaceScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description'
+};
+
+exports.Prisma.PermissionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description'
+};
+
+exports.Prisma.RolePermissionScalarFieldEnum = {
+  roleId: 'roleId',
+  permissionId: 'permissionId'
+};
+
 exports.Prisma.WorkspaceMemberScalarFieldEnum = {
   id: 'id',
   workspaceId: 'workspaceId',
   userId: 'userId',
+  roleId: 'roleId',
   role: 'role'
 };
 
@@ -272,6 +290,9 @@ exports.Priority = exports.$Enums.Priority = {
 exports.Prisma.ModelName = {
   User: 'User',
   Workspace: 'Workspace',
+  Role: 'Role',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
   WorkspaceMember: 'WorkspaceMember',
   Project: 'Project',
   TaskColumn: 'TaskColumn',

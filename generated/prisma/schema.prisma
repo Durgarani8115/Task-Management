@@ -42,14 +42,40 @@ enum WorkspaceRole {
   VIEWER
 }
 
+model Role {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  description String?
+  permissions RolePermission[]
+  members     WorkspaceMember[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
 model WorkspaceMember {
   id String @id @default(cuid())
 
   workspaceId String
   userId      String
+  roleId      String?
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleRef   Role?     @relation(fields: [roleId], references: [id])
 
   role WorkspaceRole
 

@@ -16,6 +16,7 @@ import db from "@/lib/db";
 import { getServerSession } from "@/lib/auth"
 import { Home, Settings, Briefcase, FolderKanban, LayoutGrid, LogOut } from "lucide-react";
 import SidebarProjectsList from "@/components/dashboard/sidebar-projects-list";
+import Image from "next/image";
 
 export async function AppSidebar() {
     // get current logged in user session
@@ -26,14 +27,14 @@ export async function AppSidebar() {
     if (user) {
         const userMemberships = await db.workspaceMember.findMany({
             where: { userId: user.id },
-            include: { 
+            include: {
                 workspace: {
                     include: {
                         projects: {
                             orderBy: { createdAt: 'desc' }
                         }
                     }
-                } 
+                }
             }
         });
         workspaces = userMemberships.map(member => member.workspace);
@@ -46,11 +47,17 @@ export async function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild>
                             <Link href="/dashboard" className="flex items-center gap-3 h-auto py-2.5" >
-                                <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold shrink-0 shadow-sm">
-                                    <LayoutGrid className="w-4 h-4" />
+                                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-sidebar-border shadow-sm bg-black/10 dark:bg-white/5">
+                                    <Image
+                                        src="/clove-logoo.png"
+                                        alt="Clove Icon"
+                                        width={80}
+                                        height={80}
+                                        className="max-w-none w-20 h-auto object-cover object-left"
+                                    />
                                 </div>
-                                <div className="flex flex-col items-start overflow-hidden">
-                                    <span className="font-bold text-sm text-foreground tracking-tight">TaskFlow Pro</span>
+                                <div className="flex flex-col items-start overflow-hidden group-data-[collapsible=icon]:hidden">
+                                    <span className="font-bold text-sm text-foreground tracking-tight">Clove</span>
                                     <span className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase">SaaS Enterprise</span>
                                 </div>
                             </Link>
@@ -60,7 +67,7 @@ export async function AppSidebar() {
             </SidebarHeader>
 
             <SidebarSeparator className="mx-0 bg-sidebar-border opacity-50" />
-            
+
             <SidebarContent className="scrollbar-thin bg-sidebar">
                 {/* 1. core workspace section */}
                 <SidebarGroup>
@@ -101,7 +108,7 @@ export async function AppSidebar() {
                                 </div>
                                 <div className="flex flex-col overflow-hidden text-left">
                                     <span className="text-xs font-semibold text-foreground truncate">{user?.name || "Guest User"}</span>
-                                    <span className="text-[10px] text-muted-foreground truncate">{user?.email || "guest@taskflow.com"}</span>
+                                    <span className="text-[10px] text-muted-foreground truncate">{user?.email || "guest@clove.com"}</span>
                                 </div>
                             </div>
                             <form action="/api/auth/logout" method="POST" className="shrink-0">

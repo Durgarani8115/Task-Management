@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "@/lib/auth";
 import { LayoutGrid, ArrowRight, CheckCircle2 } from "lucide-react";
 
@@ -11,11 +12,17 @@ export default async function HomePage() {
       {/* header section */}
       <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-green-700 p-2 text-white">
-              <LayoutGrid className="h-5 w-5" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-slate-200/50 shadow-sm">
+              <Image
+                src="/clove-logoo.png"
+                alt="Clove Icon"
+                width={80}
+                height={80}
+                className="max-w-none w-20 h-auto object-cover object-left"
+              />
             </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">TaskFlow</span>
+            <span className="text-xl font-bold tracking-tight text-slate-900">Clove</span>
           </div>
 
           <nav className="flex items-center gap-4">
@@ -52,7 +59,7 @@ export default async function HomePage() {
           <p className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-green-700">
             <CheckCircle2 className="h-3.5 w-3.5 text-green-700" /> Modern task management
           </p>
-          
+
           <h1 className="mt-8 text-5xl font-extrabold tracking-tight text-slate-900 sm:text-6xl md:text-7xl">
             Organize your work <br />
             <span className="bg-gradient-to-r from-green-700 to-green-900 bg-clip-text text-transparent">

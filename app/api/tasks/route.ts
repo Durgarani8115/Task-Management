@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
+import { hasPermission } from "@/lib/rbac";
 
 export async function POST(request: Request) {
   try {
@@ -24,6 +25,19 @@ export async function POST(request: Request) {
 
     if (!title || !columnId || !projectId) {
       return NextResponse.json({ error: "missing required fields" }, { status: 400 });
+    }
+
+    // verify permission to create task
+    const project = await prisma.project.findUnique({
+      where: { id: projectId }
+    });
+    if (!project) {
+      return NextResponse.json({ error: "project not found" }, { status: 404 });
+    }
+
+    const isAllowed = await hasPermission(user.id, project.workspaceId, "canCreateTask");
+    if (!isAllowed) {
+      return NextResponse.json({ error: "you do not have permission to create tasks in this workspace" }, { status: 403 });
     }
 
     // 3. figure out the position (put the new task at the bottom of the list)

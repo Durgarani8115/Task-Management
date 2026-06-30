@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
+import { hasPermission } from "@/lib/rbac";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -100,10 +101,11 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       );
     }
 
-    // only owners and admins can update projects
-    if (access.membership.role !== "OWNER" && access.membership.role !== "ADMIN") {
+    // verify permission to update project
+    const isAllowed = await hasPermission(user.id, access.workspaceId, "canManageProject");
+    if (!isAllowed) {
       return NextResponse.json(
-        { error: "only workspace owners and admins can update projects" },
+        { error: "you do not have permission to update projects in this workspace" },
         { status: 403 }
       );
     }
@@ -161,10 +163,11 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       );
     }
 
-    // only owners and admins can delete projects
-    if (access.membership.role !== "OWNER" && access.membership.role !== "ADMIN") {
+    // verify permission to delete project
+    const isAllowed = await hasPermission(user.id, access.workspaceId, "canManageProject");
+    if (!isAllowed) {
       return NextResponse.json(
-        { error: "only workspace owners and admins can delete projects" },
+        { error: "you do not have permission to delete projects in this workspace" },
         { status: 403 }
       );
     }

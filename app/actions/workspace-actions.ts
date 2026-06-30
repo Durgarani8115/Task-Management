@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { slugify } from "@/lib/utils";
+import { hasPermission } from "@/lib/rbac";
 
 export async function updateWorkspaceAction(formData: FormData) {
   const user = await getServerSession();
@@ -16,12 +17,8 @@ export async function updateWorkspaceAction(formData: FormData) {
   const name = formData.get("name")?.toString().trim();
   const description = formData.get("description")?.toString().trim();
 
-  // Verify membership and ownership before update
-  const membership = await prisma.workspaceMember.findUnique({
-    where: { workspaceId_userId: { workspaceId, userId: user.id } },
-  });
-
-  if (!membership || (membership.role !== "OWNER" && membership.role !== "ADMIN")) {
+  const isAllowed = await hasPermission(user.id, workspaceId, "canManageWorkspace");
+  if (!isAllowed) {
     throw new Error("Unauthorized to edit workspace");
   }
 
@@ -50,16 +47,14 @@ export async function updateProjectAction(formData: FormData) {
   const name = formData.get("name")?.toString().trim();
   const description = formData.get("description")?.toString().trim();
 
-  // Verify access
   const project = await prisma.project.findUnique({
-    where: { id: projectId },
-    include: { workspace: { include: { members: true } } }
+    where: { id: projectId }
   });
 
   if (!project) throw new Error("Project not found");
   
-  const isMember = project.workspace.members.some(m => m.userId === user.id);
-  if (!isMember) throw new Error("Unauthorized to edit project");
+  const isAllowed = await hasPermission(user.id, project.workspaceId, "canManageProject");
+  if (!isAllowed) throw new Error("Unauthorized to edit project");
 
   await prisma.project.update({
     where: { id: projectId },
@@ -82,13 +77,9 @@ export async function deleteWorkspaceAction(formData: FormData) {
   const workspaceId = formData.get("workspaceId")?.toString();
   if (!workspaceId) throw new Error("Missing workspace ID");
 
-  // Verify ownership before deletion (must be OWNER)
-  const membership = await prisma.workspaceMember.findUnique({
-    where: { workspaceId_userId: { workspaceId, userId: user.id } },
-  });
-
-  if (!membership || membership.role !== "OWNER") {
-    throw new Error("Only the owner can delete the workspace");
+  const isAllowed = await hasPermission(user.id, workspaceId, "canManageWorkspace");
+  if (!isAllowed) {
+    throw new Error("Only the workspace administrator can delete the workspace");
   }
 
   // Deletion logic (delete dependent tasks, projects, workspace members, activity logs)
@@ -157,16 +148,14 @@ export async function deleteProjectAction(formData: FormData) {
   const projectId = formData.get("projectId")?.toString();
   if (!projectId) throw new Error("Missing project ID");
 
-  // Verify access
   const project = await prisma.project.findUnique({
-    where: { id: projectId },
-    include: { workspace: { include: { members: true } } }
+    where: { id: projectId }
   });
 
   if (!project) throw new Error("Project not found");
 
-  const membership = project.workspace.members.find(m => m.userId === user.id);
-  if (!membership || (membership.role !== "OWNER" && membership.role !== "ADMIN")) {
+  const isAllowed = await hasPermission(user.id, project.workspaceId, "canManageProject");
+  if (!isAllowed) {
     throw new Error("Unauthorized to delete project");
   }
 
@@ -230,13 +219,20 @@ export async function createWorkspaceAction(formData: FormData) {
     counter++;
   }
 
+  const adminRole = await prisma.role.findFirst({ where: { name: 'Admin' } });
+  if (!adminRole) throw new Error("System default roles are missing. Please run seed script.");
+
   const newWorkspace = await prisma.workspace.create({
     data: {
       name,
       slug,
       description: description || null,
       members: {
-        create: { userId: user.id, role: 'OWNER' }
+        create: { 
+          userId: user.id, 
+          role: 'OWNER',
+          roleId: adminRole.id
+        }
       }
     },
   });
@@ -245,5 +241,169 @@ export async function createWorkspaceAction(formData: FormData) {
   revalidatePath("/workspaces");
 
   return { success: true, workspaceId: newWorkspace.id };
+}
+
+export async function addWorkspaceMemberAction(formData: FormData) {
+  const user = await getServerSession();
+  if (!user) throw new Error("Unauthorized");
+
+  const workspaceId = formData.get("workspaceId")?.toString();
+  const email = formData.get("email")?.toString().trim().toLowerCase();
+  const roleId = formData.get("roleId")?.toString();
+
+  if (!workspaceId || !email || !roleId) {
+    throw new Error("Missing required fields");
+  }
+
+  // check permissions
+  const isAllowed = await hasPermission(user.id, workspaceId, "canManageWorkspace");
+  if (!isAllowed) {
+    throw new Error("Unauthorized to manage workspace members");
+  }
+
+  // find user by email
+  const targetUser = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  if (!targetUser) {
+    throw new Error("User with this email not found in the system");
+  }
+
+  // check if user is already a member
+  const existingMember = await prisma.workspaceMember.findUnique({
+    where: {
+      workspaceId_userId: {
+        workspaceId,
+        userId: targetUser.id
+      }
+    }
+  });
+
+  if (existingMember) {
+    throw new Error("User is already a member of this workspace");
+  }
+
+  // add member
+  await prisma.workspaceMember.create({
+    data: {
+      workspaceId,
+      userId: targetUser.id,
+      roleId,
+      role: 'MEMBER' // compatibility with previous enum column
+    }
+  });
+
+  revalidatePath(`/workspaces/${workspaceId}`);
+  revalidatePath("/dashboard");
+
+  return { success: true };
+}
+
+export async function updateWorkspaceMemberRoleAction(formData: FormData) {
+  const user = await getServerSession();
+  if (!user) throw new Error("Unauthorized");
+
+  const workspaceId = formData.get("workspaceId")?.toString();
+  const memberId = formData.get("memberId")?.toString();
+  const roleId = formData.get("roleId")?.toString();
+
+  if (!workspaceId || !memberId || !roleId) {
+    throw new Error("Missing required fields");
+  }
+
+  // check permissions
+  const isAllowed = await hasPermission(user.id, workspaceId, "canManageWorkspace");
+  if (!isAllowed) {
+    throw new Error("Unauthorized to manage workspace members");
+  }
+
+  const memberToUpdate = await prisma.workspaceMember.findUnique({
+    where: { id: memberId },
+    include: { roleRef: true }
+  });
+
+  if (!memberToUpdate) {
+    throw new Error("Workspace member not found");
+  }
+
+  // lockout check: if demoting an Admin, ensure there's at least one other Admin in the workspace
+  const targetRole = await prisma.role.findUnique({ where: { id: roleId } });
+  if (!targetRole) throw new Error("Target role not found");
+
+  const adminRole = await prisma.role.findFirst({ where: { name: 'Admin' } });
+  if (!adminRole) throw new Error("Admin role not found");
+
+  if (memberToUpdate.roleId === adminRole.id && roleId !== adminRole.id) {
+    const adminCount = await prisma.workspaceMember.count({
+      where: {
+        workspaceId,
+        roleId: adminRole.id
+      }
+    });
+    if (adminCount <= 1) {
+      throw new Error("Cannot demote the last administrator of this workspace");
+    }
+  }
+
+  await prisma.workspaceMember.update({
+    where: { id: memberId },
+    data: { roleId }
+  });
+
+  revalidatePath(`/workspaces/${workspaceId}`);
+  revalidatePath("/dashboard");
+
+  return { success: true };
+}
+
+export async function removeWorkspaceMemberAction(formData: FormData) {
+  const user = await getServerSession();
+  if (!user) throw new Error("Unauthorized");
+
+  const workspaceId = formData.get("workspaceId")?.toString();
+  const memberId = formData.get("memberId")?.toString();
+
+  if (!workspaceId || !memberId) {
+    throw new Error("Missing required fields");
+  }
+
+  // check permissions
+  const isAllowed = await hasPermission(user.id, workspaceId, "canManageWorkspace");
+  if (!isAllowed) {
+    throw new Error("Unauthorized to manage workspace members");
+  }
+
+  const memberToRemove = await prisma.workspaceMember.findUnique({
+    where: { id: memberId }
+  });
+
+  if (!memberToRemove) {
+    throw new Error("Workspace member not found");
+  }
+
+  const adminRole = await prisma.role.findFirst({ where: { name: 'Admin' } });
+  if (!adminRole) throw new Error("Admin role not found");
+
+  if (memberToRemove.roleId === adminRole.id) {
+    const adminCount = await prisma.workspaceMember.count({
+      where: {
+        workspaceId,
+        roleId: adminRole.id
+      }
+    });
+    if (adminCount <= 1) {
+      throw new Error("Cannot remove the last administrator of this workspace");
+    }
+  }
+
+  await prisma.workspaceMember.delete({
+    where: { id: memberId }
+  });
+
+  revalidatePath(`/workspaces/${workspaceId}`);
+  revalidatePath("/dashboard");
+
+  return { success: true };
 }
 

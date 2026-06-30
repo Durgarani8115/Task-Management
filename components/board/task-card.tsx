@@ -16,6 +16,7 @@ type TaskCardProps = {
   columns?: any[];
   members?: any[];
   columnTitle?: string;
+  permissions?: string[];
 };
 
 // helper to get priority colors
@@ -65,8 +66,11 @@ function getTagStyle(tag: string) {
   return 'text-slate-500 bg-slate-50 border border-slate-100';
 }
 
-export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps) {
+export function TaskCard({ task, columns, members, columnTitle, permissions = [] }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+
+  const canEditTask = permissions.includes("canEditTask");
+  const canAssignTask = permissions.includes("canAssignTask");
 
   // use column title dynamically if provided, otherwise fallback to column name or default
   const rawStatus = columnTitle || (task.column?.title) || "Not Started"; 
@@ -79,8 +83,12 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
   return (
     <>
       <div 
-        draggable
+        draggable={canEditTask}
         onDragStart={(e) => {
+          if (!canEditTask) {
+            e.preventDefault();
+            return;
+          }
           e.dataTransfer.setData("text/plain", task.id);
           e.dataTransfer.effectAllowed = "move";
         }}
@@ -154,7 +162,7 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
               <X className="w-5 h-5" />
             </button>
             
-            <h3 className="font-bold text-lg mb-4 text-slate-800">Edit Task</h3>
+            <h3 className="font-bold text-lg mb-4 text-slate-800">{canEditTask ? "Edit Task" : "View Task"}</h3>
             
             <form action={async (formData) => {
               await updateTaskAction(formData);
@@ -163,12 +171,13 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
               <input type="hidden" name="taskId" value={task.id} />
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Title</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Title <span className="text-primary ml-0.5">*</span></label>
                 <input
                   name='title'
                   type='text'
                   defaultValue={task.title}
-                  className='minimal-panel px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 w-full text-sm'
+                  disabled={!canEditTask}
+                  className='minimal-panel px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 w-full text-sm disabled:opacity-60 disabled:bg-slate-50/50 disabled:cursor-not-allowed dark:disabled:bg-zinc-900/50'
                   required
                 />
               </div>
@@ -179,15 +188,16 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
                   name='description'
                   rows={4}
                   defaultValue={task.description || ''}
-                  className='minimal-panel px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 w-full text-sm resize-none'
+                  disabled={!canEditTask}
+                  className='minimal-panel px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 w-full text-sm resize-none disabled:opacity-60 disabled:bg-slate-50/50 disabled:cursor-not-allowed dark:disabled:bg-zinc-900/50'
                 ></textarea>
               </div>
 
               {columns && columns.length > 0 && (
                 <div>
-                  <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-1 block">Status</label>
-                  <Select name="columnId" defaultValue={task.columnId}>
-                    <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border">
+                  <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-1 block">Status <span className="text-primary ml-0.5">*</span></label>
+                  <Select name="columnId" defaultValue={task.columnId} disabled={!canEditTask}>
+                    <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border disabled:opacity-60 disabled:cursor-not-allowed">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -209,8 +219,8 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
                       ? task.assignees[0].userId
                       : "none";
                     return (
-                      <Select name="assigneeId" defaultValue={currentAssigneeId}>
-                        <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border">
+                      <Select name="assigneeId" defaultValue={currentAssigneeId} disabled={!canAssignTask}>
+                        <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border disabled:opacity-60 disabled:cursor-not-allowed">
                           <SelectValue placeholder="Assignee" />
                         </SelectTrigger>
                         <SelectContent>
@@ -229,12 +239,13 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Priority</label>
-                  <Select name="priority" defaultValue={task.priority}>
-                    <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Priority <span className="text-primary ml-0.5">*</span></label>
+                  <Select name="priority" defaultValue={task.priority} disabled={!canEditTask}>
+                    <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border disabled:opacity-60 disabled:cursor-not-allowed">
                       <SelectValue placeholder="Priority" />
                     </SelectTrigger>
                     <SelectContent>
+                      {/* Priority values */}
                       <SelectItem value="LOW">Low</SelectItem>
                       <SelectItem value="MEDIUM">Medium</SelectItem>
                       <SelectItem value="HIGH">High</SelectItem>
@@ -249,18 +260,21 @@ export function TaskCard({ task, columns, members, columnTitle }: TaskCardProps)
                     type="date" 
                     name="dueDate" 
                     defaultValue={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
-                    className="minimal-panel w-full px-3 py-2 outline-none text-sm cursor-pointer" 
+                    disabled={!canEditTask}
+                    className="minimal-panel w-full px-3 py-2 outline-none text-sm cursor-pointer disabled:opacity-60 disabled:bg-slate-50/50 disabled:cursor-not-allowed dark:disabled:bg-zinc-900/50" 
                   />
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 mt-4">
                 <button type="button" onClick={() => setIsEditing(false)} className="minimal-btn-secondary px-4 py-2 text-sm">
-                  Cancel
+                  {canEditTask ? "Cancel" : "Close"}
                 </button>
-                <button type='submit' className='minimal-btn-primary px-6 py-2 text-sm'>
-                  Save Changes
-                </button>
+                {canEditTask && (
+                  <button type='submit' className='minimal-btn-primary px-6 py-2 text-sm'>
+                    Save Changes
+                  </button>
+                )}
               </div>
             </form>
           </div>
