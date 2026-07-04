@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
+import { sendAssignmentEmail } from "@/lib/mail";
 
 export async function updateTaskAction(formData: FormData) {
   const user = await getServerSession();
@@ -77,12 +78,28 @@ export async function updateTaskAction(formData: FormData) {
 
     // create new assignee if a valid member is selected
     if (assigneeId && assigneeId !== "none") {
-      await prisma.taskAssignee.create({
+      const newAssignee = await prisma.taskAssignee.create({
         data: {
           taskId,
           userId: assigneeId,
         },
+        include: {
+          user: true,
+          task: {
+            include: {
+              project: true
+            }
+          }
+        }
       });
+
+      // send task assignment email notification to assignee
+      await sendAssignmentEmail(
+        newAssignee.user.email,
+        newAssignee.user.name,
+        newAssignee.task.title,
+        newAssignee.task.project.name
+      );
     }
   }
 
