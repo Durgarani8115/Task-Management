@@ -57,6 +57,31 @@ export default async function ProjectBoardPage({ params }: Props) {
   const permissions = await getMemberPermissions(user.id, project.workspaceId);
   const canManageProject = permissions.includes("canManageProject");
 
+  // if user is teammate, check if they are assigned to any task in this project
+  if (!canManageProject) {
+    const hasAssignedTask = await db.task.findFirst({
+      where: {
+        projectId,
+        assignees: {
+          some: {
+            userId: user.id
+          }
+        }
+      }
+    });
+
+    if (!hasAssignedTask) {
+      return (
+        <div className="w-full h-full flex items-center justify-center p-8 mt-20">
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-red-500">access denied</h2>
+            <p className="text-sm text-muted-foreground mt-2">you are not assigned to any tasks in this project.</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
   return (
     <div className='w-full h-full flex flex-col p-4 sm:p-8 overflow-hidden'>
       

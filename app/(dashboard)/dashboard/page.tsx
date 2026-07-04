@@ -30,6 +30,15 @@ export default async function DashboardPage({ searchParams }: Props) {
   const userMemberships = await db.workspaceMember.findMany({
     where: { userId: user.id },
     include: {
+      roleRef: {
+        include: {
+          permissions: {
+            include: {
+              permission: true
+            }
+          }
+        }
+      },
       workspace: {
         include: {
           projects: {
@@ -40,14 +49,53 @@ export default async function DashboardPage({ searchParams }: Props) {
     }
   });
 
-  const workspaces = userMemberships.map((m) => ({
-    id: m.workspace.id,
-    name: m.workspace.name,
-    projects: m.workspace.projects.map((p) => ({
-      id: p.id,
-      name: p.name,
-    })),
-  }));
+  const workspaces: any[] = [];
+  for (const m of userMemberships) {
+    const hasManagePermission = m.roleRef?.permissions.some(
+      (rp) => rp.permission.name === "canManageProject"
+    ) || false;
+
+    if (hasManagePermission) {
+      // managers/admins see all projects in this workspace
+      workspaces.push({
+        id: m.workspace.id,
+        name: m.workspace.name,
+        projects: m.workspace.projects.map((p) => ({
+          id: p.id,
+          name: p.name,
+        })),
+      });
+    } else {
+      // teammates only see projects where they have tasks assigned
+      const assignedProjects = await db.project.findMany({
+        where: {
+          workspaceId: m.workspaceId,
+          tasks: {
+            some: {
+              assignees: {
+                some: {
+                  userId: user.id
+                }
+              }
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      // only show the workspace if they have at least one project assigned
+      if (assignedProjects.length > 0) {
+        workspaces.push({
+          id: m.workspace.id,
+          name: m.workspace.name,
+          projects: assignedProjects.map((p) => ({
+            id: p.id,
+            name: p.name,
+          })),
+        });
+      }
+    }
+  }
 
   // if a project is selected, fetch its columns and tasks
   let project = null;

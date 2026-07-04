@@ -21,12 +21,39 @@ export async function updateTaskAction(formData: FormData) {
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
-    include: { project: true }
+    include: { 
+      project: true,
+      assignees: true
+    }
   });
   if (!task) throw new Error("Task not found");
 
-  const isAllowed = await hasPermission(user.id, task.project.workspaceId, "canEditTask");
-  if (!isAllowed) throw new Error("You do not have permission to edit tasks in this workspace.");
+  // check if user has manager-level edit permission or teammate-level status update permission
+  const isManager = await hasPermission(user.id, task.project.workspaceId, "canEditTask");
+  const canUpdateStatus = await hasPermission(user.id, task.project.workspaceId, "canUpdateTaskStatus");
+
+  if (!isManager && !canUpdateStatus) {
+    throw new Error("You do not have permission to update tasks in this workspace.");
+  }
+
+  // if user is only a teammate, check if they tried to edit restricted fields
+  if (!isManager) {
+    const hasTitleChanged = title !== undefined && title !== task.title;
+    const hasDescChanged = description !== undefined && (description || null) !== task.description;
+    const hasPriorityChanged = priority !== undefined && priority !== task.priority;
+    
+    const currentDueDateStr = task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '';
+    const hasDueDateChanged = dueDateStr !== undefined && dueDateStr !== currentDueDateStr;
+    
+    const currentAssigneeId = task.assignees && task.assignees.length > 0
+      ? task.assignees[0].userId
+      : "none";
+    const hasAssigneeChanged = assigneeId !== undefined && assigneeId !== currentAssigneeId;
+
+    if (hasTitleChanged || hasDescChanged || hasPriorityChanged || hasDueDateChanged || hasAssigneeChanged) {
+      throw new Error("You do not have permission to edit task details. You can only update the status.");
+    }
+  }
 
   await prisma.task.update({
     where: { id: taskId },
@@ -126,15 +153,51 @@ export async function moveTaskAction(taskId: string, targetColumnId: string) {
   });
   if (!taskExist) throw new Error("Task not found");
 
-  const isAllowed = await hasPermission(user.id, taskExist.project.workspaceId, "canEditTask");
+  // check teammate-level permission to change status/move tasks
+  const isAllowed = await hasPermission(user.id, taskExist.project.workspaceId, "canUpdateTaskStatus");
   if (!isAllowed) throw new Error("You do not have permission to move tasks in this workspace.");
 
-  // Update task's column in the database
+  // update task's column in the database
   const task = await prisma.task.update({
     where: { id: taskId },
     data: {
       columnId: targetColumnId,
     },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/workspaces/projects/${task.projectId}`);
+  revalidatePath("/workspaces/projects/[projectId]", "page");
+
+  return { success: true };
+}
+
+export async function deleteTaskAction(taskId: string) {
+  const user = await getServerSession();
+  if (!user) throw new Error("Unauthorized");
+
+  if (!taskId) throw new Error("Missing task ID");
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: { project: true }
+  });
+
+  if (!task) throw new Error("Task not found");
+
+  // verify delete permission (only manager-level users can delete tasks)
+  const isAllowed = await hasPermission(user.id, task.project.workspaceId, "canEditTask");
+  if (!isAllowed) throw new Error("You do not have permission to delete tasks in this workspace.");
+
+  // delete all child relationships first before deleting the task
+  await prisma.$transaction(async (tx) => {
+    await tx.comment.deleteMany({ where: { taskId } });
+    await tx.checklistItem.deleteMany({ where: { taskId } });
+    await tx.attachment.deleteMany({ where: { taskId } });
+    await tx.activityLog.deleteMany({ where: { taskId } });
+    await tx.taskAssignee.deleteMany({ where: { taskId } });
+    await tx.taskTag.deleteMany({ where: { taskId } });
+    await tx.task.delete({ where: { id: taskId } });
   });
 
   revalidatePath("/dashboard");

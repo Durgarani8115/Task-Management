@@ -44,8 +44,8 @@ export function KanbanBoard({ initialColumns, projectId, members, permissions = 
 
   const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
     e.preventDefault();
-    const canEdit = permissions.includes("canEditTask");
-    if (!canEdit) return;
+    const canUpdateStatus = permissions.includes("canUpdateTaskStatus") || permissions.includes("canEditTask");
+    if (!canUpdateStatus) return;
 
     const taskId = e.dataTransfer.getData("text/plain");
     if (!taskId) return;
@@ -140,8 +140,8 @@ export function KanbanBoard({ initialColumns, projectId, members, permissions = 
             <div
               onDragOver={(e) => {
                 e.preventDefault();
-                const canEdit = permissions.includes("canEditTask");
-                if (canEdit) {
+                const canUpdateStatus = permissions.includes("canUpdateTaskStatus") || permissions.includes("canEditTask");
+                if (canUpdateStatus) {
                   setActiveDragCol(column.id);
                 }
               }}

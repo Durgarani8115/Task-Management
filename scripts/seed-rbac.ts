@@ -10,6 +10,7 @@ async function main() {
     { name: "canAssignTask", description: "allows assigning or unassigning tasks to workspace members" },
     { name: "canCreateTask", description: "allows creating tasks inside workspace projects" },
     { name: "canEditTask", description: "allows editing and changing status of tasks inside workspace projects" },
+    { name: "canUpdateTaskStatus", description: "allows moving tasks and changing their status" },
   ];
 
   const permissions: Record<string, any> = {};
@@ -41,9 +42,9 @@ async function main() {
 
   // 3. link permissions to roles
   const rolePermissionsMap: Record<string, string[]> = {
-    Admin: ["canManageWorkspace", "canManageProject", "canAssignTask", "canCreateTask", "canEditTask"],
-    Manager: ["canManageProject", "canAssignTask", "canCreateTask", "canEditTask"],
-    Assistant: ["canCreateTask", "canEditTask"],
+    Admin: ["canManageWorkspace", "canManageProject", "canAssignTask", "canCreateTask", "canEditTask", "canUpdateTaskStatus"],
+    Manager: ["canManageProject", "canAssignTask", "canCreateTask", "canEditTask", "canUpdateTaskStatus"],
+    Assistant: ["canCreateTask", "canUpdateTaskStatus"],
   };
 
   for (const [roleName, permNames] of Object.entries(rolePermissionsMap)) {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Flag, MoreHorizontal, X } from 'lucide-react';
-import { updateTaskAction } from '@/app/actions/task-actions';
+import { updateTaskAction, deleteTaskAction } from '@/app/actions/task-actions';
 import {
   Select,
   SelectContent,
@@ -71,6 +71,7 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
 
   const canEditTask = permissions.includes("canEditTask");
   const canAssignTask = permissions.includes("canAssignTask");
+  const canUpdateStatus = permissions.includes("canUpdateTaskStatus") || canEditTask;
 
   // use column title dynamically if provided, otherwise fallback to column name or default
   const rawStatus = columnTitle || (task.column?.title) || "Not Started"; 
@@ -83,9 +84,9 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
   return (
     <>
       <div 
-        draggable={canEditTask}
+        draggable={canUpdateStatus}
         onDragStart={(e) => {
-          if (!canEditTask) {
+          if (!canUpdateStatus) {
             e.preventDefault();
             return;
           }
@@ -196,7 +197,7 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
               {columns && columns.length > 0 && (
                 <div>
                   <label className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-1 block">Status <span className="text-primary ml-0.5">*</span></label>
-                  <Select name="columnId" defaultValue={task.columnId} disabled={!canEditTask}>
+                  <Select name="columnId" defaultValue={task.columnId} disabled={!canEditTask && !canUpdateStatus}>
                     <SelectTrigger className="w-full minimal-panel px-3 py-2 h-9 outline-none text-sm cursor-pointer border border-border disabled:opacity-60 disabled:cursor-not-allowed">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
@@ -245,7 +246,7 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
                       <SelectValue placeholder="Priority" />
                     </SelectTrigger>
                     <SelectContent>
-                      {/* Priority values */}
+                      {/* priority values */}
                       <SelectItem value="LOW">Low</SelectItem>
                       <SelectItem value="MEDIUM">Medium</SelectItem>
                       <SelectItem value="HIGH">High</SelectItem>
@@ -266,15 +267,33 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 mt-4">
-                <button type="button" onClick={() => setIsEditing(false)} className="minimal-btn-secondary px-4 py-2 text-sm">
-                  {canEditTask ? "Cancel" : "Close"}
-                </button>
-                {canEditTask && (
-                  <button type='submit' className='minimal-btn-primary px-6 py-2 text-sm'>
-                    Save Changes
+              <div className="flex justify-between items-center mt-4">
+                <div>
+                  {canEditTask && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (confirm("are you sure you want to delete this task?")) {
+                          await deleteTaskAction(task.id);
+                          setIsEditing(false);
+                        }
+                      }}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 px-3 py-2 text-sm font-semibold rounded-md border border-red-200 dark:border-red-900/30 transition-colors"
+                    >
+                      Delete Task
+                    </button>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => setIsEditing(false)} className="minimal-btn-secondary px-4 py-2 text-sm">
+                    {(canEditTask || canUpdateStatus) ? "Cancel" : "Close"}
                   </button>
-                )}
+                  {(canEditTask || canUpdateStatus) && (
+                    <button type='submit' className='minimal-btn-primary px-6 py-2 text-sm'>
+                      Save Changes
+                    </button>
+                  )}
+                </div>
               </div>
             </form>
           </div>

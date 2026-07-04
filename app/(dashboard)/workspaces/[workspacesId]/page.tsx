@@ -27,7 +27,9 @@ export default async function WorkspaceDetailPage({ params }: Props) {
   const workspace = await db.workspace.findUnique({
     where: { id: workspaceId },
     include: {
-      projects: true // fetches all projects linked to this workspace
+      projects: {
+        orderBy: { createdAt: 'desc' }
+      }
     }
   });
 
@@ -39,6 +41,39 @@ export default async function WorkspaceDetailPage({ params }: Props) {
   const permissions = await getMemberPermissions(user.id, workspaceId);
   const canManageWorkspace = permissions.includes("canManageWorkspace");
   const canManageProject = permissions.includes("canManageProject");
+
+  let projects = workspace.projects || [];
+
+  // if user is teammate, enforce project-level task assignment visibility
+  if (!canManageProject) {
+    const assignedProjects = await db.project.findMany({
+      where: {
+        workspaceId,
+        tasks: {
+          some: {
+            assignees: {
+              some: {
+                userId: user.id
+              }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // if teammate has no tasks assigned in any project of this workspace, deny access
+    if (assignedProjects.length === 0) {
+      return (
+        <div className="w-full px-4 py-8 max-w-6xl mx-auto text-center mt-20">
+          <h2 className="text-xl font-bold text-red-500">access denied</h2>
+          <p className="text-sm text-muted-foreground mt-2">you are not assigned to any projects in this workspace.</p>
+        </div>
+      );
+    }
+
+    projects = assignedProjects;
+  }
 
   // fetch workspace members and all available roles
   const workspaceMembers = await db.workspaceMember.findMany({
@@ -56,8 +91,6 @@ export default async function WorkspaceDetailPage({ params }: Props) {
   const allRoles = await db.role.findMany({
     orderBy: { name: 'asc' }
   });
-
-  const projects = workspace.projects || [];
 
   return (
     <div className='w-full px-4 py-8 sm:p-8 max-w-6xl mx-auto'>

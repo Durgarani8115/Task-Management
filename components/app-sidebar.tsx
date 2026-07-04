@@ -27,6 +27,15 @@ export async function AppSidebar() {
         const userMemberships = await db.workspaceMember.findMany({
             where: { userId: user.id },
             include: {
+                roleRef: {
+                    include: {
+                        permissions: {
+                            include: {
+                                permission: true
+                            }
+                        }
+                    }
+                },
                 workspace: {
                     include: {
                         projects: {
@@ -36,7 +45,43 @@ export async function AppSidebar() {
                 }
             }
         });
-        workspaces = userMemberships.map(member => member.workspace);
+
+        for (const membership of userMemberships) {
+            const hasManagePermission = membership.roleRef?.permissions.some(
+                (rp) => rp.permission.name === "canManageProject"
+            ) || false;
+
+            if (hasManagePermission) {
+                // managers/admins see all projects in this workspace
+                workspaces.push(membership.workspace);
+            } else {
+                // teammates only see projects where they have tasks assigned
+                const assignedProjects = await db.project.findMany({
+                    where: {
+                        workspaceId: membership.workspaceId,
+                        tasks: {
+                            some: {
+                                assignees: {
+                                    some: {
+                                        userId: user.id
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                });
+
+                // only include the workspace if the teammate is assigned to at least one project
+                if (assignedProjects.length > 0) {
+                    const workspaceWithFilteredProjects = {
+                        ...membership.workspace,
+                        projects: assignedProjects
+                    };
+                    workspaces.push(workspaceWithFilteredProjects);
+                }
+            }
+        }
     }
 
     return (

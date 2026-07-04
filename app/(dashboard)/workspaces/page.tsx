@@ -12,9 +12,48 @@ export default async function WorkspacePage() {
   if (user) {
     const userMemberships = await db.workspaceMember.findMany({
       where: { userId: user.id },
-      include: { workspace: true }
+      include: {
+        roleRef: {
+          include: {
+            permissions: {
+              include: {
+                permission: true
+              }
+            }
+          }
+        },
+        workspace: true
+      }
     });
-    workspaces = userMemberships.map(member => member.workspace);
+
+    for (const m of userMemberships) {
+      const hasManagePermission = m.roleRef?.permissions.some(
+        (rp) => rp.permission.name === "canManageProject"
+      ) || false;
+
+      if (hasManagePermission) {
+        // managers/admins see all workspaces they belong to
+        workspaces.push(m.workspace);
+      } else {
+        // teammates only see workspaces where they have tasks assigned in at least one project
+        const assignedTask = await db.task.findFirst({
+          where: {
+            project: {
+              workspaceId: m.workspaceId
+            },
+            assignees: {
+              some: {
+                userId: user.id
+              }
+            }
+          }
+        });
+
+        if (assignedTask) {
+          workspaces.push(m.workspace);
+        }
+      }
+    }
   }
 
   return (
