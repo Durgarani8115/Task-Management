@@ -1,30 +1,25 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
+import {
+  getWorkspaceMembership,
+  getProjectWorkspaceId,
+  getProjectWithDetails,
+  updateProject,
+  deleteProject,
+} from "../repositories/project-repository";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 // helper to verify that the user is a member of the project's workspace
 async function verifyProjectAccess(projectId: string, userId: string) {
-  const project = await prisma.project.findUnique({
-    where: { id: projectId },
-    select: { workspaceId: true },
-  });
+  const workspaceId = await getProjectWorkspaceId(projectId);
+  if (!workspaceId) return null;
 
-  if (!project) return null;
-
-  const membership = await prisma.workspaceMember.findUnique({
-    where: {
-      workspaceId_userId: {
-        workspaceId: project.workspaceId,
-        userId,
-      },
-    },
-  });
+  const membership = await getWorkspaceMembership(workspaceId, userId);
 
   // return null if not a member, otherwise return the membership + project info
-  return membership ? { membership, workspaceId: project.workspaceId } : null;
+  return membership ? { membership, workspaceId } : null;
 }
 
 // get a single project with its columns, tasks, and tags
@@ -48,28 +43,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     }
 
     // fetch the full project with related data
-    const project = await prisma.project.findUnique({
-      where: { id },
-      include: {
-        columns: {
-          orderBy: { position: "asc" },
-          include: {
-            tasks: {
-              orderBy: { position: "asc" },
-              include: {
-                assignees: {
-                  include: { user: { select: { id: true, name: true, image: true } } },
-                },
-              },
-            },
-          },
-        },
-        tags: true,
-        _count: {
-          select: { tasks: true },
-        },
-      },
-    });
+    const project = await getProjectWithDetails(id);
 
     return NextResponse.json(project);
   } catch (error) {
@@ -128,10 +102,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
     }
 
     // update the project
-    const updatedProject = await prisma.project.update({
-      where: { id },
-      data: updateData,
-    });
+    const updatedProject = await updateProject(id, updateData);
 
     return NextResponse.json(updatedProject);
   } catch (error) {
@@ -172,27 +143,8 @@ export async function DELETE(request: Request, { params }: RouteContext) {
       );
     }
 
-    // delete everything in a transaction (no cascade deletes in schema)
-    // order matters — delete child records first, then parents
-    await prisma.$transaction(async (tx) => {
-      // delete task-level children first (comments, checklists, attachments, activity logs, assignees, task-tags)
-      await tx.comment.deleteMany({ where: { task: { projectId: id } } });
-      await tx.checklistItem.deleteMany({ where: { task: { projectId: id } } });
-      await tx.attachment.deleteMany({ where: { task: { projectId: id } } });
-      await tx.activityLog.deleteMany({ where: { task: { projectId: id } } });
-      await tx.taskAssignee.deleteMany({ where: { task: { projectId: id } } });
-      await tx.taskTag.deleteMany({ where: { task: { projectId: id } } });
-
-      // delete tasks
-      await tx.task.deleteMany({ where: { projectId: id } });
-
-      // delete tags and columns
-      await tx.tag.deleteMany({ where: { projectId: id } });
-      await tx.taskColumn.deleteMany({ where: { projectId: id } });
-
-      // finally delete the project itself
-      await tx.project.delete({ where: { id } });
-    });
+    // delete project and all related child records in a transaction
+    await deleteProject(id);
 
     return NextResponse.json({ message: "project deleted successfully" });
   } catch (error) {

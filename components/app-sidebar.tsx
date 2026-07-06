@@ -14,7 +14,7 @@ import {
 import Link from "next/link"
 import db from "@/lib/db";
 import { getServerSession } from "@/lib/auth"
-import { Home, Settings, Briefcase, FolderKanban, LayoutGrid, LogOut } from "lucide-react";
+import { Home, Settings, Briefcase, FolderKanban, LayoutGrid, LogOut, TrendingUp } from "lucide-react";
 import SidebarProjectsList from "@/components/dashboard/sidebar-projects-list";
 
 export async function AppSidebar() {
@@ -121,6 +121,14 @@ export async function AppSidebar() {
                                     <Link href="/dashboard" className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors">
                                         <Home className="w-4.5 h-4.5" />
                                         <span className="text-sm font-medium">Dashboard</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild>
+                                    <Link href="/analytics" className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors">
+                                        <TrendingUp className="w-4.5 h-4.5" />
+                                        <span className="text-sm font-medium">Analytics</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
