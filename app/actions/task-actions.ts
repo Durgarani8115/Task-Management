@@ -72,9 +72,10 @@ export async function updateTaskAction(formData: FormData) {
     const canAssign = await hasPermission(user.id, task.project.workspaceId, "canAssignTask");
     if (!canAssign) throw new Error("You do not have permission to assign tasks in this workspace.");
 
-    // check if user is already assigned to 5 or more tasks in this workspace
+    // check if user is already assigned to 5 or more active tasks in this workspace
     if (assigneeId && assigneeId !== "none") {
-      const assignedTasksCount = await prisma.taskAssignee.count({
+      // fetch all other task assignments for the user in this workspace
+      const assignedTasks = await prisma.taskAssignee.findMany({
         where: {
           userId: assigneeId,
           taskId: { not: taskId },
@@ -83,10 +84,24 @@ export async function updateTaskAction(formData: FormData) {
               workspaceId: task.project.workspaceId
             }
           }
+        },
+        include: {
+          task: {
+            include: {
+              column: true
+            }
+          }
         }
       });
 
-      if (assignedTasksCount >= 5) {
+      // filter out completed tasks based on column title matching
+      const activeTasks = assignedTasks.filter((ta) => {
+        const title = ta.task.column.title.toLowerCase();
+        const isCompleted = title.includes("done") || title.includes("complete") || title.includes("finish") || title.includes("resolved");
+        return !isCompleted;
+      });
+
+      if (activeTasks.length >= 5) {
         throw new Error("user busy, it have full quotas of task try to assigne new teammember");
       }
     }

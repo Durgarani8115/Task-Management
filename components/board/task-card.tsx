@@ -184,10 +184,27 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
             
             <form action={async (formData) => {
               try {
+                // if there was already an assignment error, force override the assignee to none (unassigned)
+                if (notification && notification.type === "error") {
+                  formData.set("assigneeId", "none");
+                  const res = await updateTaskAction(formData);
+                  if (res?.success) {
+                    setNotification({ text: "not assigned", type: "success" });
+                    setTimeout(() => {
+                      setNotification(null);
+                      setIsEditing(false);
+                    }, 1500);
+                  }
+                  return;
+                }
+
                 const res = await updateTaskAction(formData);
                 if (res?.success) {
+                  const assigneeId = formData.get("assigneeId")?.toString();
+                  const successMsg = assigneeId === "none" ? "not assigned" : "task assigned successful";
+                  
                   // show green success notification and close modal after delay
-                  setNotification({ text: "task assigned successful", type: "success" });
+                  setNotification({ text: successMsg, type: "success" });
                   setTimeout(() => {
                     setNotification(null);
                     setIsEditing(false);
