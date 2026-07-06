@@ -1,10 +1,10 @@
 import { EmailTemplate } from '@/components/email-template/email-template'
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST() {
   try {
+    // initialize resend inside the post handler to prevent next.js build time crashes
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
       from: 'Acme <onboarding@resend.dev>',
       to: ['delivered@resend.dev'],
