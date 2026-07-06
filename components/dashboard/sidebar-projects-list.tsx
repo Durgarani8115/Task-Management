@@ -87,11 +87,10 @@ export default function SidebarProjectsList({
                                 <SidebarMenuButton asChild>
                                   <Link
                                     href={`/workspaces/projects/${proj.id}`}
-                                    className={`flex items-center gap-2 transition-all duration-200 rounded-md px-2 py-1.5 ${
-                                      isActive
+                                    className={`flex items-center gap-2 transition-all duration-200 rounded-md px-2 py-1.5 ${isActive
                                         ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
                                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                                    }`}
+                                      }`}
                                   >
                                     <FolderKanban className={`w-3.5 h-3.5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
                                     <span className="text-xs truncate">{proj.name}</span>
