@@ -68,6 +68,7 @@ function getTagStyle(tag: string) {
 
 export function TaskCard({ task, columns, members, columnTitle, permissions = [] }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [notification, setNotification] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const canEditTask = permissions.includes("canEditTask");
   const canAssignTask = permissions.includes("canAssignTask");
@@ -93,7 +94,10 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
           e.dataTransfer.setData("text/plain", task.id);
           e.dataTransfer.effectAllowed = "move";
         }}
-        onClick={() => setIsEditing(true)}
+        onClick={() => {
+          setNotification(null);
+          setIsEditing(true);
+        }}
         className="minimal-card p-4 hover:border-primary/50 hover:-translate-y-1 transition-all duration-200 cursor-pointer flex flex-col gap-3"
       >
         
@@ -157,7 +161,10 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm p-4">
           <div className="minimal-card p-6 w-[500px] max-w-full relative z-10 animate-in fade-in zoom-in-95 duration-200">
             <button 
-              onClick={() => setIsEditing(false)} 
+              onClick={() => {
+                setNotification(null);
+                setIsEditing(false);
+              }} 
               className="absolute top-4 right-4 text-slate-400 dark:text-zinc-500 hover:text-primary transition-colors"
             >
               <X className="w-5 h-5" />
@@ -165,9 +172,31 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
             
             <h3 className="font-bold text-lg mb-4 text-slate-800">{canEditTask ? "Edit Task" : "View Task"}</h3>
             
+            {notification && (
+              <div className={`p-3 rounded-lg text-xs font-semibold mb-4 border transition-all duration-300 ${
+                notification.type === 'success'
+                  ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-red-500/10 border-red-500/25 text-red-600 dark:text-red-400'
+              }`}>
+                {notification.text}
+              </div>
+            )}
+            
             <form action={async (formData) => {
-              await updateTaskAction(formData);
-              setIsEditing(false);
+              try {
+                const res = await updateTaskAction(formData);
+                if (res?.success) {
+                  // show green success notification and close modal after delay
+                  setNotification({ text: "task assigned successful", type: "success" });
+                  setTimeout(() => {
+                    setNotification(null);
+                    setIsEditing(false);
+                  }, 1500);
+                }
+              } catch (error: any) {
+                // show red error notification
+                setNotification({ text: error.message || "failed to update task", type: "error" });
+              }
             }} className='flex flex-col gap-4'>
               <input type="hidden" name="taskId" value={task.id} />
 
@@ -285,7 +314,10 @@ export function TaskCard({ task, columns, members, columnTitle, permissions = []
                   )}
                 </div>
                 <div className="flex gap-3">
-                  <button type="button" onClick={() => setIsEditing(false)} className="minimal-btn-secondary px-4 py-2 text-sm">
+                  <button type="button" onClick={() => {
+                    setNotification(null);
+                    setIsEditing(false);
+                  }} className="minimal-btn-secondary px-4 py-2 text-sm">
                     {(canEditTask || canUpdateStatus) ? "Cancel" : "Close"}
                   </button>
                   {(canEditTask || canUpdateStatus) && (

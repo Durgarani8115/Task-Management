@@ -71,6 +71,26 @@ export async function updateTaskAction(formData: FormData) {
   if (assigneeId !== undefined) {
     const canAssign = await hasPermission(user.id, task.project.workspaceId, "canAssignTask");
     if (!canAssign) throw new Error("You do not have permission to assign tasks in this workspace.");
+
+    // check if user is already assigned to 5 or more tasks in this workspace
+    if (assigneeId && assigneeId !== "none") {
+      const assignedTasksCount = await prisma.taskAssignee.count({
+        where: {
+          userId: assigneeId,
+          taskId: { not: taskId },
+          task: {
+            project: {
+              workspaceId: task.project.workspaceId
+            }
+          }
+        }
+      });
+
+      if (assignedTasksCount >= 5) {
+        throw new Error("user busy, it have full quotas of task try to assigne new teammember");
+      }
+    }
+
     // delete current assignees
     await prisma.taskAssignee.deleteMany({
       where: { taskId },
