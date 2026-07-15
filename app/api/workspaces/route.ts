@@ -90,7 +90,7 @@ export async function PUT(request: Request) {
 
         // PUT requests usually send JSON instead of form data
         const body = await request.json();
-        const { workspaceId, name } = body;
+        const { workspaceId, name, description } = body;
 
         if (!workspaceId || !name) {
             return NextResponse.json({ message: "Missing workspaceId or name" }, { status: 400 });
@@ -101,6 +101,7 @@ export async function PUT(request: Request) {
             data: {
                 name,
                 slug: slugify(name),
+                description: description !== undefined ? description : undefined,
             },
         });
 

@@ -60,19 +60,33 @@ export async function PATCH(request: Request, { params }: RouteContext) {
         }
 
         const body = await request.json();
-        if (!body.name) {
+        const updateData: { name?: string; slug?: string; description?: string | null } = {};
+
+        if (body.name !== undefined) {
+            if (!body.name.trim()) {
+                return NextResponse.json(
+                    { message: "Workspace name cannot be empty" },
+                    { status: 400 }
+                );
+            }
+            updateData.name = body.name.trim();
+            updateData.slug = slugify(body.name);
+        }
+
+        if (body.description !== undefined) {
+            updateData.description = body.description;
+        }
+
+        if (Object.keys(updateData).length === 0) {
             return NextResponse.json(
-                { message: "Workspace name is required" },
+                { message: "At least one field (name or description) is required" },
                 { status: 400 }
             );
         }
 
         const workspace = await prisma.workspace.update({
             where: { id },
-            data: {
-                name: body.name,
-                slug: slugify(body.name),
-            },
+            data: updateData,
         });
 
         return NextResponse.json(workspace);
