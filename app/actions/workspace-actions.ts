@@ -6,6 +6,8 @@ import { getServerSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { slugify } from "@/lib/utils";
 import { hasPermission } from "@/lib/rbac";
+import { createProject } from "@/app/api/projects/repositories/project-repository";
+
 
 export async function updateWorkspaceAction(formData: FormData) {
   const user = await getServerSession();
@@ -406,4 +408,33 @@ export async function removeWorkspaceMemberAction(formData: FormData) {
 
   return { success: true };
 }
+
+export async function createProjectAction(formData: FormData) {
+  const user = await getServerSession();
+  if (!user) throw new Error("unauthorized");
+
+  const name = formData.get("name")?.toString().trim();
+  const description = formData.get("description")?.toString().trim();
+  const workspaceId = formData.get("workspaceId")?.toString();
+
+  if (!name || !workspaceId) {
+    throw new Error("name and workspace id are required");
+  }
+
+  // check if user is a member of the workspace
+  const isAllowed = await hasPermission(user.id, workspaceId, "canManageProject");
+  if (!isAllowed) {
+    throw new Error("you do not have permission to create projects in this workspace");
+  }
+
+  // create project and default columns together
+  await createProject(name, description, workspaceId);
+
+  // revalidate paths so user sees updates immediately
+  revalidatePath("/dashboard");
+  revalidatePath(`/workspaces/${workspaceId}`);
+
+  return { success: true };
+}
+
 

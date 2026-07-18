@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import { createProjectAction } from '@/app/actions/workspace-actions';
 
 export function CreateProjectForm({ workspaceId }: { workspaceId: string }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) {
     return (
@@ -23,16 +25,31 @@ export function CreateProjectForm({ workspaceId }: { workspaceId: string }) {
       <button 
         onClick={() => setIsOpen(false)} 
         className="absolute top-4 right-4 text-gray-400 hover:text-black transition-colors"
+        disabled={isSubmitting}
       >
         <X className="w-5 h-5" />
       </button>
       
       <h2 className='text-lg font-semibold mb-4'>create new project</h2>
       
-      {/* this form will submit to the upcoming projects api */}
-      <form action="/api/projects" method="post" className='flex flex-col gap-4'>
+      {/* this form will submit using a server action */}
+      <form 
+        action={async (formData) => {
+          setIsSubmitting(true);
+          try {
+            await createProjectAction(formData);
+            setIsOpen(false);
+          } catch (err) {
+            console.error(err);
+            alert(err instanceof Error ? err.message : "failed to create project");
+          } finally {
+            setIsSubmitting(false);
+          }
+        }} 
+        className='flex flex-col gap-4'
+      >
         <input type="hidden" name="_action" value="create" />
-        {/* we pass the workspaceId so the database knows where to link the project */}
+        {/* we pass the workspaceid so the database knows where to link the project */}
         <input type="hidden" name="workspaceId" value={workspaceId} />
         
         <div className='flex flex-col gap-2'>
@@ -46,6 +63,7 @@ export function CreateProjectForm({ workspaceId }: { workspaceId: string }) {
             placeholder='project name'
             className='border rounded-md px-3 py-2 outline-none focus:ring-2 w-full text-sm sm:text-base'
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -60,16 +78,19 @@ export function CreateProjectForm({ workspaceId }: { workspaceId: string }) {
             className='border rounded-md px-3 py-2 outline-none focus:ring-2 w-full text-sm sm:text-base'
             placeholder='project description'
             required
+            disabled={isSubmitting}
           ></textarea>
         </div>
 
         <button
           type='submit'
-          className='bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors w-full sm:w-auto sm:self-start mt-2 text-sm sm:text-base'
+          disabled={isSubmitting}
+          className='bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors w-full sm:w-auto sm:self-start mt-2 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed'
         >
-          submit
+          {isSubmitting ? 'submitting...' : 'submit'}
         </button>
       </form>
     </div>
   );
 }
+

@@ -61,17 +61,38 @@ export async function POST(request: Request) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
-    // parse form data
-    const formData = await request.formData();
-    const action = formData.get("_action")?.toString() ?? "create";
+    // check content type to parse accordingly
+    const contentType = request.headers.get("content-type") || "";
+    let name: string | undefined;
+    let description: string | undefined;
+    let workspaceId: string | undefined;
+    let action = "create";
     const referer = request.headers.get("referer");
     const redirecturl = new URL(referer ?? "/", request.url);
 
-    if (action === "create") {
-      const name = formData.get("name")?.toString().trim();
-      const description = formData.get("description")?.toString().trim();
-      const workspaceId = formData.get("workspaceId")?.toString();
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      name = body.name?.trim();
+      description = body.description?.trim();
+      workspaceId = body.workspaceId;
+      action = body._action || "create";
+    } else if (
+      contentType.includes("multipart/form-data") ||
+      contentType.includes("application/x-www-form-urlencoded")
+    ) {
+      const formData = await request.formData();
+      name = formData.get("name")?.toString().trim();
+      description = formData.get("description")?.toString().trim();
+      workspaceId = formData.get("workspaceId")?.toString();
+      action = formData.get("_action")?.toString() ?? "create";
+    } else {
+      return NextResponse.json(
+        { error: "unsupported content-type" },
+        { status: 400 }
+      );
+    }
 
+    if (action === "create") {
       if (!name || !workspaceId) {
         return NextResponse.json(
           { error: "name and workspace id are required" },
@@ -91,7 +112,14 @@ export async function POST(request: Request) {
       // create project and default columns together
       await createProject(name, description, workspaceId);
 
-      return NextResponse.redirect(redirecturl);
+      // if requested via standard form redirect, otherwise return json
+      if (
+        contentType.includes("multipart/form-data") ||
+        contentType.includes("application/x-www-form-urlencoded")
+      ) {
+        return NextResponse.redirect(redirecturl);
+      }
+      return NextResponse.json({ success: true });
     }
     return NextResponse.redirect(redirecturl);
   } catch (error) {
