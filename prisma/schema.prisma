@@ -23,8 +23,20 @@ model User {
 
   createdTasks Task[] @relation("CreatedTasks")
   activities ActivityLog[] @relation("UserActivities")
-
+  fcmTokens  UserFcmToken[]
 }
+
+// model to store user browser fcm tokens for push notifications
+model UserFcmToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 
 model Workspace {
   id          String   @id @default(cuid())

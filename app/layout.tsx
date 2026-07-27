@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { FcmProvider } from "@/components/fcm-provider";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -27,7 +28,9 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <FcmProvider>
+            {children}
+          </FcmProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -130,6 +130,14 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UserFcmTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.WorkspaceScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -289,6 +297,7 @@ exports.Priority = exports.$Enums.Priority = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  UserFcmToken: 'UserFcmToken',
   Workspace: 'Workspace',
   Role: 'Role',
   Permission: 'Permission',
