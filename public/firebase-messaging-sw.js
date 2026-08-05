@@ -2,16 +2,20 @@
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// initialize firebase inside service worker
-firebase.initializeApp({
-apiKey: "AIzaSyBVp1vWj1Jn1bklw_B5JDNdxoBg7V2IamI",
-  authDomain: "project-management-saas-1d4f0.firebaseapp.com",
-  projectId: "project-management-saas-1d4f0",
-  storageBucket: "project-management-saas-1d4f0.firebasestorage.app",
-  messagingSenderId: "863542499290",
-  appId: "1:863542499290:web:914f628bc0fd2e63ad52e3",
-  measurementId: "G-0KZ2GDF9L3"
-});
+// extract config from URL query parameters
+const urlParams = new URLSearchParams(location.search);
+const firebaseConfigStr = urlParams.get('firebaseConfig');
+
+if (firebaseConfigStr) {
+  try {
+    const firebaseConfig = JSON.parse(decodeURIComponent(firebaseConfigStr));
+    firebase.initializeApp(firebaseConfig);
+  } catch (e) {
+    console.error('Failed to parse Firebase config', e);
+  }
+} else {
+  console.error('Firebase config not found in service worker URL.');
+}
 
 const messaging = firebase.messaging();
 

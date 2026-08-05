@@ -3,13 +3,13 @@ import { getMessaging, getToken, onMessage, isSupported } from "firebase/messagi
 
 // firebase web app configuration object from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyBVp1vWj1Jn1bklw_B5JDNdxoBg7V2IamI",
-  authDomain: "project-management-saas-1d4f0.firebaseapp.com",
-  projectId: "project-management-saas-1d4f0",
-  storageBucket: "project-management-saas-1d4f0.firebasestorage.app",
-  messagingSenderId: "863542499290",
-  appId: "1:863542499290:web:914f628bc0fd2e63ad52e3",
-  measurementId: "G-0KZ2GDF9L3"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "",
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || ""
 };
 
 // initialize firebase app instance (prevents duplicate initialization)
@@ -34,8 +34,9 @@ export async function requestFcmToken() {
     }
 
     // register background service worker
+    const firebaseConfigStr = encodeURIComponent(JSON.stringify(firebaseConfig));
     const serviceWorkerRegistration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js"
+      `/firebase-messaging-sw.js?firebaseConfig=${firebaseConfigStr}`
     );
 
     const messaging = getMessaging(app);
