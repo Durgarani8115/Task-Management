@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
+import { request } from "http";
+
 
 export async function POST(request: Request) {
   try {

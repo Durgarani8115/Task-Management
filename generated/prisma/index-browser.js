@@ -138,6 +138,20 @@ exports.Prisma.UserFcmTokenScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  actorId: 'actorId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  linkUrl: 'linkUrl',
+  isRead: 'isRead',
+  taskId: 'taskId',
+  workspaceId: 'workspaceId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.WorkspaceScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -281,6 +295,16 @@ exports.Prisma.JsonNullValueFilter = {
   JsonNull: Prisma.JsonNull,
   AnyNull: Prisma.AnyNull
 };
+exports.NotificationType = exports.$Enums.NotificationType = {
+  TASK_ASSIGNED: 'TASK_ASSIGNED',
+  TASK_UNASSIGNED: 'TASK_UNASSIGNED',
+  TASK_STATUS_CHANGED: 'TASK_STATUS_CHANGED',
+  TASK_COMMENT: 'TASK_COMMENT',
+  TASK_MENTION: 'TASK_MENTION',
+  TASK_DUE_SOON: 'TASK_DUE_SOON',
+  WORKSPACE_INVITE: 'WORKSPACE_INVITE'
+};
+
 exports.WorkspaceRole = exports.$Enums.WorkspaceRole = {
   OWNER: 'OWNER',
   ADMIN: 'ADMIN',
@@ -298,6 +322,7 @@ exports.Priority = exports.$Enums.Priority = {
 exports.Prisma.ModelName = {
   User: 'User',
   UserFcmToken: 'UserFcmToken',
+  Notification: 'Notification',
   Workspace: 'Workspace',
   Role: 'Role',
   Permission: 'Permission',

@@ -1,9 +1,10 @@
-import { CircleHelp, Search, Bell } from "lucide-react";
+import { CircleHelp, Search } from "lucide-react";
 import db from "@/lib/db";
 import { getServerSession } from "@/lib/auth";
 import DashboardSelector from "@/components/dashboard/dashboard-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "./theme-toggle";
+import { NotificationDropdown } from "./notification-dropdown";
 
 export default async function TopHeader() {
   const user = await getServerSession();
@@ -70,13 +71,7 @@ export default async function TopHeader() {
           <CircleHelp size={18} />
         </button>
 
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md grid h-8 w-8 place-items-center transition-colors"
-        >
-          <Bell size={18} />
-        </button>
+        <NotificationDropdown />
       </div>
     </header>
   );

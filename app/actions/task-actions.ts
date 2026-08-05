@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "@/lib/auth";
 import { hasPermission } from "@/lib/rbac";
 import { sendAssignmentEmail } from "@/lib/mail";
+import { dispatchNotification } from "@/lib/notifications";
 
 export async function updateTaskAction(formData: FormData) {
   const user = await getServerSession();
@@ -135,6 +136,18 @@ export async function updateTaskAction(formData: FormData) {
         newAssignee.task.title,
         newAssignee.task.project.name
       );
+
+      // dispatch in-app and browser push notification to assigned user
+      await dispatchNotification({
+        recipientIds: [newAssignee.user.id],
+        actorId: user.id,
+        type: "TASK_ASSIGNED",
+        title: "New Task Assigned",
+        message: `You have been assigned to task: "${newAssignee.task.title}"`,
+        linkUrl: `/workspaces/projects/${newAssignee.task.projectId}`,
+        taskId: newAssignee.task.id,
+        workspaceId: newAssignee.task.project.workspaceId,
+      });
     }
   }
 
@@ -154,6 +167,7 @@ export async function createTaskAction(formData: FormData) {
   const dueDateStr = formData.get("dueDate")?.toString();
   const columnId = formData.get("columnId")?.toString();
   const projectId = formData.get("projectId")?.toString();
+  const assigneeId = formData.get("assigneeId")?.toString();
 
   if (!title || !columnId || !projectId) {
     throw new Error("Missing required fields");
@@ -171,7 +185,7 @@ export async function createTaskAction(formData: FormData) {
     where: { columnId }
   });
 
-  await prisma.task.create({
+  const createdTask = await prisma.task.create({
     data: {
       title,
       description,
@@ -183,6 +197,44 @@ export async function createTaskAction(formData: FormData) {
       createdById: user.id
     }
   });
+
+  // handle task assignee on task creation if specified
+  if (assigneeId && assigneeId !== "none") {
+    const newAssignee = await prisma.taskAssignee.create({
+      data: {
+        taskId: createdTask.id,
+        userId: assigneeId,
+      },
+      include: {
+        user: true,
+        task: {
+          include: {
+            project: true
+          }
+        }
+      }
+    });
+
+    // send email notification
+    await sendAssignmentEmail(
+      newAssignee.user.email,
+      newAssignee.user.name,
+      newAssignee.task.title,
+      newAssignee.task.project.name
+    );
+
+    // dispatch in-app and browser push notification to assigned user
+    await dispatchNotification({
+      recipientIds: [newAssignee.user.id],
+      actorId: user.id,
+      type: "TASK_ASSIGNED",
+      title: "New Task Assigned",
+      message: `You have been assigned to task: "${newAssignee.task.title}"`,
+      linkUrl: `/workspaces/projects/${newAssignee.task.projectId}`,
+      taskId: newAssignee.task.id,
+      workspaceId: project.workspaceId,
+    });
+  }
 
   revalidatePath("/dashboard");
   revalidatePath(`/workspaces/projects/${projectId}`);
@@ -215,6 +267,27 @@ export async function moveTaskAction(taskId: string, targetColumnId: string) {
     data: {
       columnId: targetColumnId,
     },
+    include: {
+      column: true,
+      assignees: true,
+    }
+  });
+
+  // notify task creator and assignees about the column move
+  const recipientIds = [
+    ...(task.createdById ? [task.createdById] : []),
+    ...task.assignees.map((a) => a.userId),
+  ];
+
+  await dispatchNotification({
+    recipientIds,
+    actorId: user.id,
+    type: "TASK_STATUS_CHANGED",
+    title: "Task Status Updated",
+    message: `Task "${task.title}" was moved to "${task.column.title}"`,
+    linkUrl: `/workspaces/projects/${task.projectId}`,
+    taskId: task.id,
+    workspaceId: taskExist.project.workspaceId,
   });
 
   revalidatePath("/dashboard");

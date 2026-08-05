@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
 import { getUserFromRequest } from "@/lib/auth";
-import { sendPushNotificationToUser } from "@/lib/fcm-admin";
+import { dispatchNotification } from "@/lib/notifications";
 
-// handle assigning a user to a task and triggering push notification
+// handle assigning a user to a task and triggering push and in-app notifications
 export async function POST(request: Request) {
   try {
     // authenticate requesting user
@@ -48,18 +48,21 @@ export async function POST(request: Request) {
       },
     });
 
-    // dispatch fcm browser push notification to assigned user
-    await sendPushNotificationToUser({
-      userId: targetUserId,
+    // dispatch in-app and fcm browser push notification to assigned user
+    await dispatchNotification({
+      recipientIds: [targetUserId],
+      actorId: currentUser.id,
+      type: "TASK_ASSIGNED",
       title: "New Task Assigned",
-      body: `You have been assigned to task: "${task.title}"`,
-      url: `/dashboard`,
+      message: `You have been assigned to task: "${task.title}"`,
+      linkUrl: `/workspaces/projects/${task.projectId}`,
+      taskId: task.id,
     });
 
-    return NextResponse.json({ success: true, message: "user assigned and push notification dispatched" });
+    return NextResponse.json({ success: true, message: "user assigned and notification dispatched" });
   } catch (error) {
     // log error during task assignment
-    console.error("failed to assign task and send push notification:", error);
+    console.error("failed to assign task and send notification:", error);
     return NextResponse.json({ error: "internal server error" }, { status: 500 });
   }
 }

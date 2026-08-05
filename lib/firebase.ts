@@ -20,12 +20,16 @@ export async function requestFcmToken() {
   try {
     // check if browser supports web push notifications
     const supported = await isSupported();
-    if (!supported) return null;
+    if (!supported) {
+      console.warn("browser does not support web push notifications");
+      return null;
+    }
 
     // prompt user for browser notification permission
     const permission = await Notification.requestPermission();
     if (permission !== "granted") {
       // user blocked or dismissed notification prompt
+      console.warn("browser notification permission was not granted:", permission);
       return null;
     }
 
@@ -35,12 +39,21 @@ export async function requestFcmToken() {
     );
 
     const messaging = getMessaging(app);
-    // request unique device token using vapid public key
-    const currentToken = await getToken(messaging, {
-      vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
-      serviceWorkerRegistration,
-    });
 
+    // construct token options conditionally
+    const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
+    const tokenOptions: { serviceWorkerRegistration: ServiceWorkerRegistration; vapidKey?: string } = {
+      serviceWorkerRegistration,
+    };
+    if (vapidKey) {
+      tokenOptions.vapidKey = vapidKey;
+    }
+
+    // request unique device token
+    const currentToken = await getToken(messaging, tokenOptions);
+    if (currentToken) {
+      console.log("fcm push token retrieved successfully:", currentToken);
+    }
     return currentToken;
   } catch (error) {
     // log error if token retrieval fails
