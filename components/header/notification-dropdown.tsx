@@ -32,16 +32,21 @@ export function NotificationDropdown() {
 
   // fetch notifications from backend api
   const fetchNotifications = async () => {
+    console.log("[debug][notification-dropdown] starting fetchNotifications");
     try {
       setLoading(true);
       const res = await fetch("/api/notifications");
+      console.log("[debug][notification-dropdown] fetch response:", res.status, res.statusText);
       if (res.ok) {
         const data = await res.json();
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
+      } else {
+        console.warn("[debug][notification-dropdown] response not ok:", await res.text());
       }
     } catch (error) {
-      console.error("failed to fetch notifications:", error);
+      console.error("[debug][notification-dropdown] failed to fetch notifications:", error);
+      console.dir(error); // prints the detailed object
     } finally {
       setLoading(false);
     }

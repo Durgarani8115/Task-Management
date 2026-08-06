@@ -24,6 +24,7 @@ export function NotificationBell() {
 
   // fetch notifications from server
   const fetchNotifications = async () => {
+    console.log("[debug][notification-bell] starting fetchNotifications");
     try {
       const res = await fetch("/api/notifications", {
         cache: "no-store",
@@ -31,13 +32,17 @@ export function NotificationBell() {
           "Cache-Control": "no-cache",
         },
       });
+      console.log("[debug][notification-bell] fetch response:", res.status, res.statusText);
       if (res.ok) {
         const data = await res.json();
         setNotifications(data.notifications || []);
         setUnreadCount(data.unreadCount || 0);
+      } else {
+        console.warn("[debug][notification-bell] response not ok:", await res.text());
       }
     } catch (error) {
-      console.error("failed to load notifications:", error);
+      console.error("[debug][notification-bell] failed to load notifications:", error);
+      console.dir(error); // prints the detailed object
     }
   };
 
