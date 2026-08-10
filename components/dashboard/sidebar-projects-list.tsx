@@ -25,9 +25,11 @@ type Workspace = {
 };
 
 export default function SidebarProjectsList({
-  workspaces,
+  personalWorkspaces,
+  assignedWorkspaces,
 }: {
-  workspaces: Workspace[];
+  personalWorkspaces: Workspace[];
+  assignedWorkspaces: Workspace[];
 }) {
   const pathname = usePathname();
 
@@ -38,10 +40,10 @@ export default function SidebarProjectsList({
     setExpandedWorkspaceId((prevId) => (prevId === workspaceId ? null : workspaceId));
   };
 
-  return (
+  const renderWorkspaceGroup = (title: string, workspaces: Workspace[]) => (
     <SidebarGroup>
       <SidebarGroupLabel className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-        assigned workspaces
+        {title}
       </SidebarGroupLabel>
       <SidebarGroupContent>
         {workspaces.length > 0 ? (
@@ -87,12 +89,17 @@ export default function SidebarProjectsList({
                                 <SidebarMenuButton asChild>
                                   <Link
                                     href={`/workspaces/projects/${proj.id}`}
-                                    className={`flex items-center gap-2 transition-all duration-200 rounded-md px-2 py-1.5 ${isActive
+                                    className={`flex items-center gap-2 transition-all duration-200 rounded-md px-2 py-1.5 ${
+                                      isActive
                                         ? "bg-primary/10 text-primary font-semibold border-l-2 border-primary"
                                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                                      }`}
+                                    }`}
                                   >
-                                    <FolderKanban className={`w-3.5 h-3.5 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                                    <FolderKanban
+                                      className={`w-3.5 h-3.5 ${
+                                        isActive ? "text-primary" : "text-muted-foreground"
+                                      }`}
+                                    />
                                     <span className="text-xs truncate">{proj.name}</span>
                                   </Link>
                                 </SidebarMenuButton>
@@ -114,10 +121,17 @@ export default function SidebarProjectsList({
         ) : (
           <div className="px-3 py-2 flex items-center gap-1.5 text-[10px] text-muted-foreground font-medium">
             <Info className="w-3 h-3" />
-            <span>no assigned workspaces found.</span>
+            <span>no workspaces found.</span>
           </div>
         )}
       </SidebarGroupContent>
     </SidebarGroup>
+  );
+
+  return (
+    <>
+      {renderWorkspaceGroup("personal workspace", personalWorkspaces)}
+      {renderWorkspaceGroup("assigned workspace", assignedWorkspaces)}
+    </>
   );
 }

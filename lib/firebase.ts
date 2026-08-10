@@ -39,6 +39,9 @@ export async function requestFcmToken() {
       `/firebase-messaging-sw.js?firebaseConfig=${firebaseConfigStr}`
     );
 
+    // wait for service worker to be ready to avoid 'no active Service Worker' errors
+    await navigator.serviceWorker.ready;
+
     const messaging = getMessaging(app);
 
     // construct token options conditionally

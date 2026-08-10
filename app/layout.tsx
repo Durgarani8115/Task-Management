@@ -3,6 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { FcmProvider } from "@/components/fcm-provider";
+import { Toaster } from "sonner";
+import { CommandMenu } from "@/components/command-menu";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -31,6 +33,8 @@ export default function RootLayout({
           <FcmProvider>
             {children}
           </FcmProvider>
+          <Toaster />
+          <CommandMenu />
         </ThemeProvider>
       </body>
     </html>

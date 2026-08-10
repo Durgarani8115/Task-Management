@@ -50,7 +50,17 @@ export function NotificationBell() {
     fetchNotifications();
     // poll for new notifications every 15 seconds
     const interval = setInterval(fetchNotifications, 15000);
-    return () => clearInterval(interval);
+    
+    // listen for custom fcm-message event to refetch instantly
+    const handleFcmMessage = () => {
+      fetchNotifications();
+    };
+    window.addEventListener("fcm-message", handleFcmMessage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("fcm-message", handleFcmMessage);
+    };
   }, []);
 
   // mark single or all notifications read

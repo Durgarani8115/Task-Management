@@ -22,7 +22,8 @@ export async function AppSidebar() {
     const user = await getServerSession()
 
     // fetch all workspaces this user is a member of, along with their projects
-    let workspaces: any[] = [];
+    let personalWorkspaces: any[] = [];
+    let assignedWorkspaces: any[] = [];
     if (user) {
         const userMemberships = await db.workspaceMember.findMany({
             where: { userId: user.id },
@@ -53,7 +54,11 @@ export async function AppSidebar() {
 
             if (hasManagePermission) {
                 // managers/admins see all projects in this workspace
-                workspaces.push(membership.workspace);
+                if (membership.role === "OWNER") {
+                    personalWorkspaces.push(membership.workspace);
+                } else {
+                    assignedWorkspaces.push(membership.workspace);
+                }
             } else {
                 // teammates only see projects where they have tasks assigned
                 const assignedProjects = await db.project.findMany({
@@ -78,7 +83,11 @@ export async function AppSidebar() {
                         ...membership.workspace,
                         projects: assignedProjects
                     };
-                    workspaces.push(workspaceWithFilteredProjects);
+                    if (membership.role === "OWNER") {
+                        personalWorkspaces.push(workspaceWithFilteredProjects);
+                    } else {
+                        assignedWorkspaces.push(workspaceWithFilteredProjects);
+                    }
                 }
             }
         }
@@ -145,7 +154,10 @@ export async function AppSidebar() {
                 </SidebarGroup>
 
                 {/* 2. dynamic active workspace projects */}
-                <SidebarProjectsList workspaces={workspaces} />
+                <SidebarProjectsList 
+                    personalWorkspaces={personalWorkspaces} 
+                    assignedWorkspaces={assignedWorkspaces} 
+                />
             </SidebarContent>
 
             <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-3">
