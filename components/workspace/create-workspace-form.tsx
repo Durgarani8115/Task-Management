@@ -56,10 +56,10 @@ export function CreateWorkspaceForm() {
                   name='description'
                   rows={3}
                   className='minimal-panel px-4 py-2 outline-none focus:ring-2 focus:ring-slate-900 w-full text-sm resize-none'
-                  placeholder='Workspace description (5-25 chars)'
+                  placeholder='Workspace description (5-100 chars)'
                   required
                   minLength={5}
-                  maxLength={25}
+                  maxLength={100}
                 ></textarea>
               </div>
 

@@ -140,7 +140,7 @@ export async function AppSidebar() {
                                 <SidebarMenuButton asChild>
                                     <Link href="/workspaces" className="flex items-center gap-2.5 text-muted-foreground hover:text-foreground transition-colors">
                                         <Settings className="w-4.5 h-4.5" />
-                                        <span className="text-sm font-medium">Workspaces Settings</span>
+                                        <span className="text-sm font-medium">Workspaces</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
