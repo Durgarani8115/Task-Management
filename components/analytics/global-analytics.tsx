@@ -12,7 +12,10 @@ import {
   PieChart, 
   Pie, 
   Cell,
-  Legend
+  Legend,
+  AreaChart,
+  Area,
+  CartesianGrid
 } from "recharts";
 import { 
   Users, 
@@ -43,6 +46,8 @@ type Task = {
   project?: { name: string };
   column: { title: string };
   assignees: { userId: string; user: { name: string; email: string } }[];
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 type Project = {
@@ -262,23 +267,36 @@ export function GlobalAnalytics({ workspaces }: Props) {
     });
   }
 
+  // generate 14-day timeline data for the velocity chart
+  const timelineData = [];
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    
+    // cumulative metrics
+    const cumulativeTotal = allTasks.filter(t => new Date(t.createdAt) <= d).length;
+    const cumulativeCompleted = completedTasks.filter(t => new Date(t.updatedAt) <= d).length;
+
+    timelineData.push({
+      date: dateLabel,
+      "Total Scope": cumulativeTotal,
+      "Completed": cumulativeCompleted
+    });
+  }
+
   return (
     <div className="w-full px-4 py-8 sm:p-8 max-w-6xl mx-auto flex flex-col gap-8 overflow-y-auto scrollbar-thin h-full">
       
       {/* header row with workspace switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-            <TrendingUp className="w-7 h-7 text-primary" />
-            Global Analytics
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            monitor workload and status contributions across all active workspaces.
-          </p>
-        </div>
+        
         
         {/* workspace filter select dropdown */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 ">
           <label htmlFor="workspace-filter" className="text-xs font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
             Workspace:
           </label>
@@ -350,6 +368,52 @@ export function GlobalAnalytics({ workspaces }: Props) {
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Active</span>
             <span className="text-2xl font-black text-foreground">{activeTasksCount}</span>
           </div>
+        </div>
+      </div>
+
+      {/* velocity / burn-up chart */}
+      <div className="minimal-card p-6 flex flex-col gap-4 min-h-[350px]">
+        <div>
+          <h3 className="font-bold text-base text-foreground">Task Velocity (Last 14 Days)</h3>
+          <p className="text-xs text-muted-foreground">cumulative task creation vs completion over time</p>
+        </div>
+        <div className="flex-1 w-full min-h-[250px] flex items-center justify-center">
+          {!mounted ? (
+            <div className="text-xs text-muted-foreground">loading charts...</div>
+          ) : timelineData.length === 0 ? (
+            <div className="text-xs text-muted-foreground italic">no tasks created yet</div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={timelineData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#71717a" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#71717a" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.05)" />
+                <XAxis dataKey="date" stroke="#888888" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke="#888888" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
+                <ChartTooltip 
+                  contentStyle={{ 
+                    borderRadius: "6px", 
+                    fontSize: "12px", 
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                    backgroundColor: "var(--background)",
+                    color: "var(--foreground)"
+                  }} 
+                />
+                <Legend verticalAlign="top" height={36} wrapperStyle={{ fontSize: "11px", paddingBottom: "10px" }} />
+                <Area type="monotone" dataKey="Total Scope" stroke="#71717a" strokeWidth={2} fillOpacity={1} fill="url(#colorTotal)" />
+                <Area type="monotone" dataKey="Completed" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#colorCompleted)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 

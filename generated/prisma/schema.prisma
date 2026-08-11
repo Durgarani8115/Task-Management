@@ -23,6 +23,7 @@ model User {
 
   createdTasks       Task[]         @relation("CreatedTasks")
   activities         ActivityLog[]  @relation("UserActivities")
+  timeEntries        TimeEntry[]
   fcmTokens          UserFcmToken[]
   notifications      Notification[] @relation("RecipientNotifications")
   actedNotifications Notification[] @relation("ActorNotifications")
@@ -209,6 +210,10 @@ model Task {
 
   activities ActivityLog[]
 
+  timeEntries      TimeEntry[]
+  estimatedMinutes Int?
+  startedAt        DateTime?
+
   tags TaskTag[]
 
   createdAt DateTime @default(now())
@@ -324,4 +329,19 @@ model ActivityLog {
   actor User @relation("UserActivities", fields: [actorId], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model TimeEntry {
+  id          String  @id @default(cuid())
+  minutes     Int
+  description String?
+
+  taskId String
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

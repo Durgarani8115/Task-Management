@@ -103,6 +103,11 @@ export type Attachment = $Result.DefaultSelection<Prisma.$AttachmentPayload>
  * 
  */
 export type ActivityLog = $Result.DefaultSelection<Prisma.$ActivityLogPayload>
+/**
+ * Model TimeEntry
+ * 
+ */
+export type TimeEntry = $Result.DefaultSelection<Prisma.$TimeEntryPayload>
 
 /**
  * Enums
@@ -454,6 +459,16 @@ export class PrismaClient<
     * ```
     */
   get activityLog(): Prisma.ActivityLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.timeEntry`: Exposes CRUD operations for the **TimeEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TimeEntries
+    * const timeEntries = await prisma.timeEntry.findMany()
+    * ```
+    */
+  get timeEntry(): Prisma.TimeEntryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -905,7 +920,8 @@ export namespace Prisma {
     Comment: 'Comment',
     ChecklistItem: 'ChecklistItem',
     Attachment: 'Attachment',
-    ActivityLog: 'ActivityLog'
+    ActivityLog: 'ActivityLog',
+    TimeEntry: 'TimeEntry'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -921,7 +937,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "userFcmToken" | "notification" | "workspace" | "role" | "permission" | "rolePermission" | "workspaceMember" | "project" | "taskColumn" | "task" | "taskTag" | "taskAssignee" | "tag" | "comment" | "checklistItem" | "attachment" | "activityLog"
+      modelProps: "user" | "userFcmToken" | "notification" | "workspace" | "role" | "permission" | "rolePermission" | "workspaceMember" | "project" | "taskColumn" | "task" | "taskTag" | "taskAssignee" | "tag" | "comment" | "checklistItem" | "attachment" | "activityLog" | "timeEntry"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2257,6 +2273,80 @@ export namespace Prisma {
           }
         }
       }
+      TimeEntry: {
+        payload: Prisma.$TimeEntryPayload<ExtArgs>
+        fields: Prisma.TimeEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TimeEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TimeEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.TimeEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TimeEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>
+          }
+          findMany: {
+            args: Prisma.TimeEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>[]
+          }
+          create: {
+            args: Prisma.TimeEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>
+          }
+          createMany: {
+            args: Prisma.TimeEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TimeEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.TimeEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>
+          }
+          update: {
+            args: Prisma.TimeEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.TimeEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TimeEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TimeEntryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>[]
+          }
+          upsert: {
+            args: Prisma.TimeEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TimeEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.TimeEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTimeEntry>
+          }
+          groupBy: {
+            args: Prisma.TimeEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TimeEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TimeEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<TimeEntryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2383,6 +2473,7 @@ export namespace Prisma {
     checklistItem?: ChecklistItemOmit
     attachment?: AttachmentOmit
     activityLog?: ActivityLogOmit
+    timeEntry?: TimeEntryOmit
   }
 
   /* Types for Logging */
@@ -2468,6 +2559,7 @@ export namespace Prisma {
     comments: number
     createdTasks: number
     activities: number
+    timeEntries: number
     fcmTokens: number
     notifications: number
     actedNotifications: number
@@ -2479,6 +2571,7 @@ export namespace Prisma {
     comments?: boolean | UserCountOutputTypeCountCommentsArgs
     createdTasks?: boolean | UserCountOutputTypeCountCreatedTasksArgs
     activities?: boolean | UserCountOutputTypeCountActivitiesArgs
+    timeEntries?: boolean | UserCountOutputTypeCountTimeEntriesArgs
     fcmTokens?: boolean | UserCountOutputTypeCountFcmTokensArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     actedNotifications?: boolean | UserCountOutputTypeCountActedNotificationsArgs
@@ -2528,6 +2621,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ActivityLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTimeEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TimeEntryWhereInput
   }
 
   /**
@@ -2753,6 +2853,7 @@ export namespace Prisma {
     checklist: number
     attachments: number
     activities: number
+    timeEntries: number
     tags: number
   }
 
@@ -2762,6 +2863,7 @@ export namespace Prisma {
     checklist?: boolean | TaskCountOutputTypeCountChecklistArgs
     attachments?: boolean | TaskCountOutputTypeCountAttachmentsArgs
     activities?: boolean | TaskCountOutputTypeCountActivitiesArgs
+    timeEntries?: boolean | TaskCountOutputTypeCountTimeEntriesArgs
     tags?: boolean | TaskCountOutputTypeCountTagsArgs
   }
 
@@ -2809,6 +2911,13 @@ export namespace Prisma {
    */
   export type TaskCountOutputTypeCountActivitiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ActivityLogWhereInput
+  }
+
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountTimeEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TimeEntryWhereInput
   }
 
   /**
@@ -3039,6 +3148,7 @@ export namespace Prisma {
     comments?: boolean | User$commentsArgs<ExtArgs>
     createdTasks?: boolean | User$createdTasksArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    timeEntries?: boolean | User$timeEntriesArgs<ExtArgs>
     fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     actedNotifications?: boolean | User$actedNotificationsArgs<ExtArgs>
@@ -3082,6 +3192,7 @@ export namespace Prisma {
     comments?: boolean | User$commentsArgs<ExtArgs>
     createdTasks?: boolean | User$createdTasksArgs<ExtArgs>
     activities?: boolean | User$activitiesArgs<ExtArgs>
+    timeEntries?: boolean | User$timeEntriesArgs<ExtArgs>
     fcmTokens?: boolean | User$fcmTokensArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     actedNotifications?: boolean | User$actedNotificationsArgs<ExtArgs>
@@ -3098,6 +3209,7 @@ export namespace Prisma {
       comments: Prisma.$CommentPayload<ExtArgs>[]
       createdTasks: Prisma.$TaskPayload<ExtArgs>[]
       activities: Prisma.$ActivityLogPayload<ExtArgs>[]
+      timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
       fcmTokens: Prisma.$UserFcmTokenPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       actedNotifications: Prisma.$NotificationPayload<ExtArgs>[]
@@ -3509,6 +3621,7 @@ export namespace Prisma {
     comments<T extends User$commentsArgs<ExtArgs> = {}>(args?: Subset<T, User$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     createdTasks<T extends User$createdTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activities<T extends User$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, User$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    timeEntries<T extends User$timeEntriesArgs<ExtArgs> = {}>(args?: Subset<T, User$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     fcmTokens<T extends User$fcmTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$fcmTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserFcmTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     actedNotifications<T extends User$actedNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$actedNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4058,6 +4171,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ActivityLogScalarFieldEnum | ActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.timeEntries
+   */
+  export type User$timeEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    where?: TimeEntryWhereInput
+    orderBy?: TimeEntryOrderByWithRelationInput | TimeEntryOrderByWithRelationInput[]
+    cursor?: TimeEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TimeEntryScalarFieldEnum | TimeEntryScalarFieldEnum[]
   }
 
   /**
@@ -14044,10 +14181,12 @@ export namespace Prisma {
 
   export type TaskAvgAggregateOutputType = {
     position: number | null
+    estimatedMinutes: number | null
   }
 
   export type TaskSumAggregateOutputType = {
     position: number | null
+    estimatedMinutes: number | null
   }
 
   export type TaskMinAggregateOutputType = {
@@ -14060,6 +14199,8 @@ export namespace Prisma {
     projectId: string | null
     columnId: string | null
     createdById: string | null
+    estimatedMinutes: number | null
+    startedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -14074,6 +14215,8 @@ export namespace Prisma {
     projectId: string | null
     columnId: string | null
     createdById: string | null
+    estimatedMinutes: number | null
+    startedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -14088,6 +14231,8 @@ export namespace Prisma {
     projectId: number
     columnId: number
     createdById: number
+    estimatedMinutes: number
+    startedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -14096,10 +14241,12 @@ export namespace Prisma {
 
   export type TaskAvgAggregateInputType = {
     position?: true
+    estimatedMinutes?: true
   }
 
   export type TaskSumAggregateInputType = {
     position?: true
+    estimatedMinutes?: true
   }
 
   export type TaskMinAggregateInputType = {
@@ -14112,6 +14259,8 @@ export namespace Prisma {
     projectId?: true
     columnId?: true
     createdById?: true
+    estimatedMinutes?: true
+    startedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -14126,6 +14275,8 @@ export namespace Prisma {
     projectId?: true
     columnId?: true
     createdById?: true
+    estimatedMinutes?: true
+    startedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -14140,6 +14291,8 @@ export namespace Prisma {
     projectId?: true
     columnId?: true
     createdById?: true
+    estimatedMinutes?: true
+    startedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -14241,6 +14394,8 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById: string | null
+    estimatedMinutes: number | null
+    startedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: TaskCountAggregateOutputType | null
@@ -14274,6 +14429,8 @@ export namespace Prisma {
     projectId?: boolean
     columnId?: boolean
     createdById?: boolean
+    estimatedMinutes?: boolean
+    startedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -14284,6 +14441,7 @@ export namespace Prisma {
     checklist?: boolean | Task$checklistArgs<ExtArgs>
     attachments?: boolean | Task$attachmentsArgs<ExtArgs>
     activities?: boolean | Task$activitiesArgs<ExtArgs>
+    timeEntries?: boolean | Task$timeEntriesArgs<ExtArgs>
     tags?: boolean | Task$tagsArgs<ExtArgs>
     _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["task"]>
@@ -14298,6 +14456,8 @@ export namespace Prisma {
     projectId?: boolean
     columnId?: boolean
     createdById?: boolean
+    estimatedMinutes?: boolean
+    startedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -14315,6 +14475,8 @@ export namespace Prisma {
     projectId?: boolean
     columnId?: boolean
     createdById?: boolean
+    estimatedMinutes?: boolean
+    startedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     project?: boolean | ProjectDefaultArgs<ExtArgs>
@@ -14332,11 +14494,13 @@ export namespace Prisma {
     projectId?: boolean
     columnId?: boolean
     createdById?: boolean
+    estimatedMinutes?: boolean
+    startedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "priority" | "dueDate" | "position" | "projectId" | "columnId" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "priority" | "dueDate" | "position" | "projectId" | "columnId" | "createdById" | "estimatedMinutes" | "startedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     project?: boolean | ProjectDefaultArgs<ExtArgs>
     column?: boolean | TaskColumnDefaultArgs<ExtArgs>
@@ -14346,6 +14510,7 @@ export namespace Prisma {
     checklist?: boolean | Task$checklistArgs<ExtArgs>
     attachments?: boolean | Task$attachmentsArgs<ExtArgs>
     activities?: boolean | Task$activitiesArgs<ExtArgs>
+    timeEntries?: boolean | Task$timeEntriesArgs<ExtArgs>
     tags?: boolean | Task$tagsArgs<ExtArgs>
     _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -14371,6 +14536,7 @@ export namespace Prisma {
       checklist: Prisma.$ChecklistItemPayload<ExtArgs>[]
       attachments: Prisma.$AttachmentPayload<ExtArgs>[]
       activities: Prisma.$ActivityLogPayload<ExtArgs>[]
+      timeEntries: Prisma.$TimeEntryPayload<ExtArgs>[]
       tags: Prisma.$TaskTagPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -14383,6 +14549,8 @@ export namespace Prisma {
       projectId: string
       columnId: string
       createdById: string | null
+      estimatedMinutes: number | null
+      startedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["task"]>
@@ -14787,6 +14955,7 @@ export namespace Prisma {
     checklist<T extends Task$checklistArgs<ExtArgs> = {}>(args?: Subset<T, Task$checklistArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChecklistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     attachments<T extends Task$attachmentsArgs<ExtArgs> = {}>(args?: Subset<T, Task$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activities<T extends Task$activitiesArgs<ExtArgs> = {}>(args?: Subset<T, Task$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    timeEntries<T extends Task$timeEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Task$timeEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     tags<T extends Task$tagsArgs<ExtArgs> = {}>(args?: Subset<T, Task$tagsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -14826,6 +14995,8 @@ export namespace Prisma {
     readonly projectId: FieldRef<"Task", 'String'>
     readonly columnId: FieldRef<"Task", 'String'>
     readonly createdById: FieldRef<"Task", 'String'>
+    readonly estimatedMinutes: FieldRef<"Task", 'Int'>
+    readonly startedAt: FieldRef<"Task", 'DateTime'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
   }
@@ -15365,6 +15536,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ActivityLogScalarFieldEnum | ActivityLogScalarFieldEnum[]
+  }
+
+  /**
+   * Task.timeEntries
+   */
+  export type Task$timeEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    where?: TimeEntryWhereInput
+    orderBy?: TimeEntryOrderByWithRelationInput | TimeEntryOrderByWithRelationInput[]
+    cursor?: TimeEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TimeEntryScalarFieldEnum | TimeEntryScalarFieldEnum[]
   }
 
   /**
@@ -22952,6 +23147,1137 @@ export namespace Prisma {
 
 
   /**
+   * Model TimeEntry
+   */
+
+  export type AggregateTimeEntry = {
+    _count: TimeEntryCountAggregateOutputType | null
+    _avg: TimeEntryAvgAggregateOutputType | null
+    _sum: TimeEntrySumAggregateOutputType | null
+    _min: TimeEntryMinAggregateOutputType | null
+    _max: TimeEntryMaxAggregateOutputType | null
+  }
+
+  export type TimeEntryAvgAggregateOutputType = {
+    minutes: number | null
+  }
+
+  export type TimeEntrySumAggregateOutputType = {
+    minutes: number | null
+  }
+
+  export type TimeEntryMinAggregateOutputType = {
+    id: string | null
+    minutes: number | null
+    description: string | null
+    taskId: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeEntryMaxAggregateOutputType = {
+    id: string | null
+    minutes: number | null
+    description: string | null
+    taskId: string | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TimeEntryCountAggregateOutputType = {
+    id: number
+    minutes: number
+    description: number
+    taskId: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TimeEntryAvgAggregateInputType = {
+    minutes?: true
+  }
+
+  export type TimeEntrySumAggregateInputType = {
+    minutes?: true
+  }
+
+  export type TimeEntryMinAggregateInputType = {
+    id?: true
+    minutes?: true
+    description?: true
+    taskId?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeEntryMaxAggregateInputType = {
+    id?: true
+    minutes?: true
+    description?: true
+    taskId?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TimeEntryCountAggregateInputType = {
+    id?: true
+    minutes?: true
+    description?: true
+    taskId?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TimeEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TimeEntry to aggregate.
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeEntries to fetch.
+     */
+    orderBy?: TimeEntryOrderByWithRelationInput | TimeEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TimeEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TimeEntries
+    **/
+    _count?: true | TimeEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TimeEntryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TimeEntrySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TimeEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TimeEntryMaxAggregateInputType
+  }
+
+  export type GetTimeEntryAggregateType<T extends TimeEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateTimeEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTimeEntry[P]>
+      : GetScalarType<T[P], AggregateTimeEntry[P]>
+  }
+
+
+
+
+  export type TimeEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TimeEntryWhereInput
+    orderBy?: TimeEntryOrderByWithAggregationInput | TimeEntryOrderByWithAggregationInput[]
+    by: TimeEntryScalarFieldEnum[] | TimeEntryScalarFieldEnum
+    having?: TimeEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TimeEntryCountAggregateInputType | true
+    _avg?: TimeEntryAvgAggregateInputType
+    _sum?: TimeEntrySumAggregateInputType
+    _min?: TimeEntryMinAggregateInputType
+    _max?: TimeEntryMaxAggregateInputType
+  }
+
+  export type TimeEntryGroupByOutputType = {
+    id: string
+    minutes: number
+    description: string | null
+    taskId: string
+    userId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: TimeEntryCountAggregateOutputType | null
+    _avg: TimeEntryAvgAggregateOutputType | null
+    _sum: TimeEntrySumAggregateOutputType | null
+    _min: TimeEntryMinAggregateOutputType | null
+    _max: TimeEntryMaxAggregateOutputType | null
+  }
+
+  type GetTimeEntryGroupByPayload<T extends TimeEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TimeEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TimeEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TimeEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], TimeEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TimeEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    minutes?: boolean
+    description?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["timeEntry"]>
+
+  export type TimeEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    minutes?: boolean
+    description?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["timeEntry"]>
+
+  export type TimeEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    minutes?: boolean
+    description?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["timeEntry"]>
+
+  export type TimeEntrySelectScalar = {
+    id?: boolean
+    minutes?: boolean
+    description?: boolean
+    taskId?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TimeEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "minutes" | "description" | "taskId" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["timeEntry"]>
+  export type TimeEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TimeEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type TimeEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $TimeEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TimeEntry"
+    objects: {
+      task: Prisma.$TaskPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      minutes: number
+      description: string | null
+      taskId: string
+      userId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["timeEntry"]>
+    composites: {}
+  }
+
+  type TimeEntryGetPayload<S extends boolean | null | undefined | TimeEntryDefaultArgs> = $Result.GetResult<Prisma.$TimeEntryPayload, S>
+
+  type TimeEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TimeEntryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TimeEntryCountAggregateInputType | true
+    }
+
+  export interface TimeEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TimeEntry'], meta: { name: 'TimeEntry' } }
+    /**
+     * Find zero or one TimeEntry that matches the filter.
+     * @param {TimeEntryFindUniqueArgs} args - Arguments to find a TimeEntry
+     * @example
+     * // Get one TimeEntry
+     * const timeEntry = await prisma.timeEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TimeEntryFindUniqueArgs>(args: SelectSubset<T, TimeEntryFindUniqueArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TimeEntry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TimeEntryFindUniqueOrThrowArgs} args - Arguments to find a TimeEntry
+     * @example
+     * // Get one TimeEntry
+     * const timeEntry = await prisma.timeEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TimeEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, TimeEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TimeEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryFindFirstArgs} args - Arguments to find a TimeEntry
+     * @example
+     * // Get one TimeEntry
+     * const timeEntry = await prisma.timeEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TimeEntryFindFirstArgs>(args?: SelectSubset<T, TimeEntryFindFirstArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TimeEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryFindFirstOrThrowArgs} args - Arguments to find a TimeEntry
+     * @example
+     * // Get one TimeEntry
+     * const timeEntry = await prisma.timeEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TimeEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, TimeEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TimeEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TimeEntries
+     * const timeEntries = await prisma.timeEntry.findMany()
+     * 
+     * // Get first 10 TimeEntries
+     * const timeEntries = await prisma.timeEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const timeEntryWithIdOnly = await prisma.timeEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TimeEntryFindManyArgs>(args?: SelectSubset<T, TimeEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TimeEntry.
+     * @param {TimeEntryCreateArgs} args - Arguments to create a TimeEntry.
+     * @example
+     * // Create one TimeEntry
+     * const TimeEntry = await prisma.timeEntry.create({
+     *   data: {
+     *     // ... data to create a TimeEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends TimeEntryCreateArgs>(args: SelectSubset<T, TimeEntryCreateArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TimeEntries.
+     * @param {TimeEntryCreateManyArgs} args - Arguments to create many TimeEntries.
+     * @example
+     * // Create many TimeEntries
+     * const timeEntry = await prisma.timeEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TimeEntryCreateManyArgs>(args?: SelectSubset<T, TimeEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TimeEntries and returns the data saved in the database.
+     * @param {TimeEntryCreateManyAndReturnArgs} args - Arguments to create many TimeEntries.
+     * @example
+     * // Create many TimeEntries
+     * const timeEntry = await prisma.timeEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TimeEntries and only return the `id`
+     * const timeEntryWithIdOnly = await prisma.timeEntry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TimeEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, TimeEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TimeEntry.
+     * @param {TimeEntryDeleteArgs} args - Arguments to delete one TimeEntry.
+     * @example
+     * // Delete one TimeEntry
+     * const TimeEntry = await prisma.timeEntry.delete({
+     *   where: {
+     *     // ... filter to delete one TimeEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TimeEntryDeleteArgs>(args: SelectSubset<T, TimeEntryDeleteArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TimeEntry.
+     * @param {TimeEntryUpdateArgs} args - Arguments to update one TimeEntry.
+     * @example
+     * // Update one TimeEntry
+     * const timeEntry = await prisma.timeEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TimeEntryUpdateArgs>(args: SelectSubset<T, TimeEntryUpdateArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TimeEntries.
+     * @param {TimeEntryDeleteManyArgs} args - Arguments to filter TimeEntries to delete.
+     * @example
+     * // Delete a few TimeEntries
+     * const { count } = await prisma.timeEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TimeEntryDeleteManyArgs>(args?: SelectSubset<T, TimeEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimeEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TimeEntries
+     * const timeEntry = await prisma.timeEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TimeEntryUpdateManyArgs>(args: SelectSubset<T, TimeEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TimeEntries and returns the data updated in the database.
+     * @param {TimeEntryUpdateManyAndReturnArgs} args - Arguments to update many TimeEntries.
+     * @example
+     * // Update many TimeEntries
+     * const timeEntry = await prisma.timeEntry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TimeEntries and only return the `id`
+     * const timeEntryWithIdOnly = await prisma.timeEntry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TimeEntryUpdateManyAndReturnArgs>(args: SelectSubset<T, TimeEntryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TimeEntry.
+     * @param {TimeEntryUpsertArgs} args - Arguments to update or create a TimeEntry.
+     * @example
+     * // Update or create a TimeEntry
+     * const timeEntry = await prisma.timeEntry.upsert({
+     *   create: {
+     *     // ... data to create a TimeEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TimeEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TimeEntryUpsertArgs>(args: SelectSubset<T, TimeEntryUpsertArgs<ExtArgs>>): Prisma__TimeEntryClient<$Result.GetResult<Prisma.$TimeEntryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TimeEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryCountArgs} args - Arguments to filter TimeEntries to count.
+     * @example
+     * // Count the number of TimeEntries
+     * const count = await prisma.timeEntry.count({
+     *   where: {
+     *     // ... the filter for the TimeEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends TimeEntryCountArgs>(
+      args?: Subset<T, TimeEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TimeEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TimeEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TimeEntryAggregateArgs>(args: Subset<T, TimeEntryAggregateArgs>): Prisma.PrismaPromise<GetTimeEntryAggregateType<T>>
+
+    /**
+     * Group by TimeEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TimeEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TimeEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TimeEntryGroupByArgs['orderBy'] }
+        : { orderBy?: TimeEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TimeEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTimeEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TimeEntry model
+   */
+  readonly fields: TimeEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TimeEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TimeEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    task<T extends TaskDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TaskDefaultArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TimeEntry model
+   */
+  interface TimeEntryFieldRefs {
+    readonly id: FieldRef<"TimeEntry", 'String'>
+    readonly minutes: FieldRef<"TimeEntry", 'Int'>
+    readonly description: FieldRef<"TimeEntry", 'String'>
+    readonly taskId: FieldRef<"TimeEntry", 'String'>
+    readonly userId: FieldRef<"TimeEntry", 'String'>
+    readonly createdAt: FieldRef<"TimeEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"TimeEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TimeEntry findUnique
+   */
+  export type TimeEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which TimeEntry to fetch.
+     */
+    where: TimeEntryWhereUniqueInput
+  }
+
+  /**
+   * TimeEntry findUniqueOrThrow
+   */
+  export type TimeEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which TimeEntry to fetch.
+     */
+    where: TimeEntryWhereUniqueInput
+  }
+
+  /**
+   * TimeEntry findFirst
+   */
+  export type TimeEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which TimeEntry to fetch.
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeEntries to fetch.
+     */
+    orderBy?: TimeEntryOrderByWithRelationInput | TimeEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeEntries.
+     */
+    cursor?: TimeEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeEntries.
+     */
+    distinct?: TimeEntryScalarFieldEnum | TimeEntryScalarFieldEnum[]
+  }
+
+  /**
+   * TimeEntry findFirstOrThrow
+   */
+  export type TimeEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which TimeEntry to fetch.
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeEntries to fetch.
+     */
+    orderBy?: TimeEntryOrderByWithRelationInput | TimeEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TimeEntries.
+     */
+    cursor?: TimeEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeEntries.
+     */
+    distinct?: TimeEntryScalarFieldEnum | TimeEntryScalarFieldEnum[]
+  }
+
+  /**
+   * TimeEntry findMany
+   */
+  export type TimeEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which TimeEntries to fetch.
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TimeEntries to fetch.
+     */
+    orderBy?: TimeEntryOrderByWithRelationInput | TimeEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TimeEntries.
+     */
+    cursor?: TimeEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TimeEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TimeEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TimeEntries.
+     */
+    distinct?: TimeEntryScalarFieldEnum | TimeEntryScalarFieldEnum[]
+  }
+
+  /**
+   * TimeEntry create
+   */
+  export type TimeEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TimeEntry.
+     */
+    data: XOR<TimeEntryCreateInput, TimeEntryUncheckedCreateInput>
+  }
+
+  /**
+   * TimeEntry createMany
+   */
+  export type TimeEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TimeEntries.
+     */
+    data: TimeEntryCreateManyInput | TimeEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TimeEntry createManyAndReturn
+   */
+  export type TimeEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * The data used to create many TimeEntries.
+     */
+    data: TimeEntryCreateManyInput | TimeEntryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TimeEntry update
+   */
+  export type TimeEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TimeEntry.
+     */
+    data: XOR<TimeEntryUpdateInput, TimeEntryUncheckedUpdateInput>
+    /**
+     * Choose, which TimeEntry to update.
+     */
+    where: TimeEntryWhereUniqueInput
+  }
+
+  /**
+   * TimeEntry updateMany
+   */
+  export type TimeEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TimeEntries.
+     */
+    data: XOR<TimeEntryUpdateManyMutationInput, TimeEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which TimeEntries to update
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * Limit how many TimeEntries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TimeEntry updateManyAndReturn
+   */
+  export type TimeEntryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * The data used to update TimeEntries.
+     */
+    data: XOR<TimeEntryUpdateManyMutationInput, TimeEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which TimeEntries to update
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * Limit how many TimeEntries to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TimeEntry upsert
+   */
+  export type TimeEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TimeEntry to update in case it exists.
+     */
+    where: TimeEntryWhereUniqueInput
+    /**
+     * In case the TimeEntry found by the `where` argument doesn't exist, create a new TimeEntry with this data.
+     */
+    create: XOR<TimeEntryCreateInput, TimeEntryUncheckedCreateInput>
+    /**
+     * In case the TimeEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TimeEntryUpdateInput, TimeEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * TimeEntry delete
+   */
+  export type TimeEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+    /**
+     * Filter which TimeEntry to delete.
+     */
+    where: TimeEntryWhereUniqueInput
+  }
+
+  /**
+   * TimeEntry deleteMany
+   */
+  export type TimeEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TimeEntries to delete
+     */
+    where?: TimeEntryWhereInput
+    /**
+     * Limit how many TimeEntries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TimeEntry without action
+   */
+  export type TimeEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TimeEntry
+     */
+    select?: TimeEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TimeEntry
+     */
+    omit?: TimeEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TimeEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -23087,6 +24413,8 @@ export namespace Prisma {
     projectId: 'projectId',
     columnId: 'columnId',
     createdById: 'createdById',
+    estimatedMinutes: 'estimatedMinutes',
+    startedAt: 'startedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -23167,6 +24495,19 @@ export namespace Prisma {
   };
 
   export type ActivityLogScalarFieldEnum = (typeof ActivityLogScalarFieldEnum)[keyof typeof ActivityLogScalarFieldEnum]
+
+
+  export const TimeEntryScalarFieldEnum: {
+    id: 'id',
+    minutes: 'minutes',
+    description: 'description',
+    taskId: 'taskId',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TimeEntryScalarFieldEnum = (typeof TimeEntryScalarFieldEnum)[keyof typeof TimeEntryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -23353,6 +24694,7 @@ export namespace Prisma {
     comments?: CommentListRelationFilter
     createdTasks?: TaskListRelationFilter
     activities?: ActivityLogListRelationFilter
+    timeEntries?: TimeEntryListRelationFilter
     fcmTokens?: UserFcmTokenListRelationFilter
     notifications?: NotificationListRelationFilter
     actedNotifications?: NotificationListRelationFilter
@@ -23371,6 +24713,7 @@ export namespace Prisma {
     comments?: CommentOrderByRelationAggregateInput
     createdTasks?: TaskOrderByRelationAggregateInput
     activities?: ActivityLogOrderByRelationAggregateInput
+    timeEntries?: TimeEntryOrderByRelationAggregateInput
     fcmTokens?: UserFcmTokenOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     actedNotifications?: NotificationOrderByRelationAggregateInput
@@ -23392,6 +24735,7 @@ export namespace Prisma {
     comments?: CommentListRelationFilter
     createdTasks?: TaskListRelationFilter
     activities?: ActivityLogListRelationFilter
+    timeEntries?: TimeEntryListRelationFilter
     fcmTokens?: UserFcmTokenListRelationFilter
     notifications?: NotificationListRelationFilter
     actedNotifications?: NotificationListRelationFilter
@@ -23965,6 +25309,8 @@ export namespace Prisma {
     projectId?: StringFilter<"Task"> | string
     columnId?: StringFilter<"Task"> | string
     createdById?: StringNullableFilter<"Task"> | string | null
+    estimatedMinutes?: IntNullableFilter<"Task"> | number | null
+    startedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
@@ -23975,6 +25321,7 @@ export namespace Prisma {
     checklist?: ChecklistItemListRelationFilter
     attachments?: AttachmentListRelationFilter
     activities?: ActivityLogListRelationFilter
+    timeEntries?: TimeEntryListRelationFilter
     tags?: TaskTagListRelationFilter
   }
 
@@ -23988,6 +25335,8 @@ export namespace Prisma {
     projectId?: SortOrder
     columnId?: SortOrder
     createdById?: SortOrderInput | SortOrder
+    estimatedMinutes?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     project?: ProjectOrderByWithRelationInput
@@ -23998,6 +25347,7 @@ export namespace Prisma {
     checklist?: ChecklistItemOrderByRelationAggregateInput
     attachments?: AttachmentOrderByRelationAggregateInput
     activities?: ActivityLogOrderByRelationAggregateInput
+    timeEntries?: TimeEntryOrderByRelationAggregateInput
     tags?: TaskTagOrderByRelationAggregateInput
   }
 
@@ -24014,6 +25364,8 @@ export namespace Prisma {
     projectId?: StringFilter<"Task"> | string
     columnId?: StringFilter<"Task"> | string
     createdById?: StringNullableFilter<"Task"> | string | null
+    estimatedMinutes?: IntNullableFilter<"Task"> | number | null
+    startedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     project?: XOR<ProjectScalarRelationFilter, ProjectWhereInput>
@@ -24024,6 +25376,7 @@ export namespace Prisma {
     checklist?: ChecklistItemListRelationFilter
     attachments?: AttachmentListRelationFilter
     activities?: ActivityLogListRelationFilter
+    timeEntries?: TimeEntryListRelationFilter
     tags?: TaskTagListRelationFilter
   }, "id">
 
@@ -24037,6 +25390,8 @@ export namespace Prisma {
     projectId?: SortOrder
     columnId?: SortOrder
     createdById?: SortOrderInput | SortOrder
+    estimatedMinutes?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TaskCountOrderByAggregateInput
@@ -24059,6 +25414,8 @@ export namespace Prisma {
     projectId?: StringWithAggregatesFilter<"Task"> | string
     columnId?: StringWithAggregatesFilter<"Task"> | string
     createdById?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    estimatedMinutes?: IntNullableWithAggregatesFilter<"Task"> | number | null
+    startedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
   }
@@ -24460,6 +25817,76 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ActivityLog"> | Date | string
   }
 
+  export type TimeEntryWhereInput = {
+    AND?: TimeEntryWhereInput | TimeEntryWhereInput[]
+    OR?: TimeEntryWhereInput[]
+    NOT?: TimeEntryWhereInput | TimeEntryWhereInput[]
+    id?: StringFilter<"TimeEntry"> | string
+    minutes?: IntFilter<"TimeEntry"> | number
+    description?: StringNullableFilter<"TimeEntry"> | string | null
+    taskId?: StringFilter<"TimeEntry"> | string
+    userId?: StringFilter<"TimeEntry"> | string
+    createdAt?: DateTimeFilter<"TimeEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"TimeEntry"> | Date | string
+    task?: XOR<TaskScalarRelationFilter, TaskWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type TimeEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    minutes?: SortOrder
+    description?: SortOrderInput | SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    task?: TaskOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type TimeEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TimeEntryWhereInput | TimeEntryWhereInput[]
+    OR?: TimeEntryWhereInput[]
+    NOT?: TimeEntryWhereInput | TimeEntryWhereInput[]
+    minutes?: IntFilter<"TimeEntry"> | number
+    description?: StringNullableFilter<"TimeEntry"> | string | null
+    taskId?: StringFilter<"TimeEntry"> | string
+    userId?: StringFilter<"TimeEntry"> | string
+    createdAt?: DateTimeFilter<"TimeEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"TimeEntry"> | Date | string
+    task?: XOR<TaskScalarRelationFilter, TaskWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type TimeEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    minutes?: SortOrder
+    description?: SortOrderInput | SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TimeEntryCountOrderByAggregateInput
+    _avg?: TimeEntryAvgOrderByAggregateInput
+    _max?: TimeEntryMaxOrderByAggregateInput
+    _min?: TimeEntryMinOrderByAggregateInput
+    _sum?: TimeEntrySumOrderByAggregateInput
+  }
+
+  export type TimeEntryScalarWhereWithAggregatesInput = {
+    AND?: TimeEntryScalarWhereWithAggregatesInput | TimeEntryScalarWhereWithAggregatesInput[]
+    OR?: TimeEntryScalarWhereWithAggregatesInput[]
+    NOT?: TimeEntryScalarWhereWithAggregatesInput | TimeEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TimeEntry"> | string
+    minutes?: IntWithAggregatesFilter<"TimeEntry"> | number
+    description?: StringNullableWithAggregatesFilter<"TimeEntry"> | string | null
+    taskId?: StringWithAggregatesFilter<"TimeEntry"> | string
+    userId?: StringWithAggregatesFilter<"TimeEntry"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"TimeEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TimeEntry"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -24473,6 +25900,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
@@ -24491,6 +25919,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
@@ -24509,6 +25938,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
@@ -24527,6 +25957,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
@@ -25100,6 +26531,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -25110,6 +26543,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -25123,6 +26557,8 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
@@ -25130,6 +26566,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -25140,6 +26577,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -25150,6 +26589,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -25163,6 +26603,8 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
@@ -25170,6 +26612,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -25183,6 +26626,8 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25194,6 +26639,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25208,6 +26655,8 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25583,6 +27032,74 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TimeEntryCreateInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    task: TaskCreateNestedOneWithoutTimeEntriesInput
+    user: UserCreateNestedOneWithoutTimeEntriesInput
+  }
+
+  export type TimeEntryUncheckedCreateInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    taskId: string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    task?: TaskUpdateOneRequiredWithoutTimeEntriesNestedInput
+    user?: UserUpdateOneRequiredWithoutTimeEntriesNestedInput
+  }
+
+  export type TimeEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeEntryCreateManyInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    taskId: string
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -25654,6 +27171,12 @@ export namespace Prisma {
     none?: ActivityLogWhereInput
   }
 
+  export type TimeEntryListRelationFilter = {
+    every?: TimeEntryWhereInput
+    some?: TimeEntryWhereInput
+    none?: TimeEntryWhereInput
+  }
+
   export type UserFcmTokenListRelationFilter = {
     every?: UserFcmTokenWhereInput
     some?: UserFcmTokenWhereInput
@@ -25688,6 +27211,10 @@ export namespace Prisma {
   }
 
   export type ActivityLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TimeEntryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26180,6 +27707,17 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type TaskColumnScalarRelationFilter = {
     is?: TaskColumnWhereInput
     isNot?: TaskColumnWhereInput
@@ -26225,12 +27763,15 @@ export namespace Prisma {
     projectId?: SortOrder
     columnId?: SortOrder
     createdById?: SortOrder
+    estimatedMinutes?: SortOrder
+    startedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
     position?: SortOrder
+    estimatedMinutes?: SortOrder
   }
 
   export type TaskMaxOrderByAggregateInput = {
@@ -26243,6 +27784,8 @@ export namespace Prisma {
     projectId?: SortOrder
     columnId?: SortOrder
     createdById?: SortOrder
+    estimatedMinutes?: SortOrder
+    startedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26257,12 +27800,15 @@ export namespace Prisma {
     projectId?: SortOrder
     columnId?: SortOrder
     createdById?: SortOrder
+    estimatedMinutes?: SortOrder
+    startedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
     position?: SortOrder
+    estimatedMinutes?: SortOrder
   }
 
   export type EnumPriorityWithAggregatesFilter<$PrismaModel = never> = {
@@ -26287,6 +27833,22 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type TaskScalarRelationFilter = {
@@ -26427,17 +27989,6 @@ export namespace Prisma {
     position?: SortOrder
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type AttachmentCountOrderByAggregateInput = {
     id?: SortOrder
     filename?: SortOrder
@@ -26474,22 +28025,6 @@ export namespace Prisma {
 
   export type AttachmentSumOrderByAggregateInput = {
     size?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -26566,6 +28101,44 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type TimeEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    minutes?: SortOrder
+    description?: SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeEntryAvgOrderByAggregateInput = {
+    minutes?: SortOrder
+  }
+
+  export type TimeEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    minutes?: SortOrder
+    description?: SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    minutes?: SortOrder
+    description?: SortOrder
+    taskId?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TimeEntrySumOrderByAggregateInput = {
+    minutes?: SortOrder
+  }
+
   export type WorkspaceMemberCreateNestedManyWithoutUserInput = {
     create?: XOR<WorkspaceMemberCreateWithoutUserInput, WorkspaceMemberUncheckedCreateWithoutUserInput> | WorkspaceMemberCreateWithoutUserInput[] | WorkspaceMemberUncheckedCreateWithoutUserInput[]
     connectOrCreate?: WorkspaceMemberCreateOrConnectWithoutUserInput | WorkspaceMemberCreateOrConnectWithoutUserInput[]
@@ -26599,6 +28172,13 @@ export namespace Prisma {
     connectOrCreate?: ActivityLogCreateOrConnectWithoutActorInput | ActivityLogCreateOrConnectWithoutActorInput[]
     createMany?: ActivityLogCreateManyActorInputEnvelope
     connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+  }
+
+  export type TimeEntryCreateNestedManyWithoutUserInput = {
+    create?: XOR<TimeEntryCreateWithoutUserInput, TimeEntryUncheckedCreateWithoutUserInput> | TimeEntryCreateWithoutUserInput[] | TimeEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutUserInput | TimeEntryCreateOrConnectWithoutUserInput[]
+    createMany?: TimeEntryCreateManyUserInputEnvelope
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
   }
 
   export type UserFcmTokenCreateNestedManyWithoutUserInput = {
@@ -26655,6 +28235,13 @@ export namespace Prisma {
     connectOrCreate?: ActivityLogCreateOrConnectWithoutActorInput | ActivityLogCreateOrConnectWithoutActorInput[]
     createMany?: ActivityLogCreateManyActorInputEnvelope
     connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
+  }
+
+  export type TimeEntryUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TimeEntryCreateWithoutUserInput, TimeEntryUncheckedCreateWithoutUserInput> | TimeEntryCreateWithoutUserInput[] | TimeEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutUserInput | TimeEntryCreateOrConnectWithoutUserInput[]
+    createMany?: TimeEntryCreateManyUserInputEnvelope
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
   }
 
   export type UserFcmTokenUncheckedCreateNestedManyWithoutUserInput = {
@@ -26758,6 +28345,20 @@ export namespace Prisma {
     update?: ActivityLogUpdateWithWhereUniqueWithoutActorInput | ActivityLogUpdateWithWhereUniqueWithoutActorInput[]
     updateMany?: ActivityLogUpdateManyWithWhereWithoutActorInput | ActivityLogUpdateManyWithWhereWithoutActorInput[]
     deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
+  }
+
+  export type TimeEntryUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TimeEntryCreateWithoutUserInput, TimeEntryUncheckedCreateWithoutUserInput> | TimeEntryCreateWithoutUserInput[] | TimeEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutUserInput | TimeEntryCreateOrConnectWithoutUserInput[]
+    upsert?: TimeEntryUpsertWithWhereUniqueWithoutUserInput | TimeEntryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TimeEntryCreateManyUserInputEnvelope
+    set?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    disconnect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    delete?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    update?: TimeEntryUpdateWithWhereUniqueWithoutUserInput | TimeEntryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TimeEntryUpdateManyWithWhereWithoutUserInput | TimeEntryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TimeEntryScalarWhereInput | TimeEntryScalarWhereInput[]
   }
 
   export type UserFcmTokenUpdateManyWithoutUserNestedInput = {
@@ -26870,6 +28471,20 @@ export namespace Prisma {
     update?: ActivityLogUpdateWithWhereUniqueWithoutActorInput | ActivityLogUpdateWithWhereUniqueWithoutActorInput[]
     updateMany?: ActivityLogUpdateManyWithWhereWithoutActorInput | ActivityLogUpdateManyWithWhereWithoutActorInput[]
     deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
+  }
+
+  export type TimeEntryUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TimeEntryCreateWithoutUserInput, TimeEntryUncheckedCreateWithoutUserInput> | TimeEntryCreateWithoutUserInput[] | TimeEntryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutUserInput | TimeEntryCreateOrConnectWithoutUserInput[]
+    upsert?: TimeEntryUpsertWithWhereUniqueWithoutUserInput | TimeEntryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TimeEntryCreateManyUserInputEnvelope
+    set?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    disconnect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    delete?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    update?: TimeEntryUpdateWithWhereUniqueWithoutUserInput | TimeEntryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TimeEntryUpdateManyWithWhereWithoutUserInput | TimeEntryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TimeEntryScalarWhereInput | TimeEntryScalarWhereInput[]
   }
 
   export type UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput = {
@@ -27509,6 +29124,13 @@ export namespace Prisma {
     connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
   }
 
+  export type TimeEntryCreateNestedManyWithoutTaskInput = {
+    create?: XOR<TimeEntryCreateWithoutTaskInput, TimeEntryUncheckedCreateWithoutTaskInput> | TimeEntryCreateWithoutTaskInput[] | TimeEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutTaskInput | TimeEntryCreateOrConnectWithoutTaskInput[]
+    createMany?: TimeEntryCreateManyTaskInputEnvelope
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+  }
+
   export type TaskTagCreateNestedManyWithoutTaskInput = {
     create?: XOR<TaskTagCreateWithoutTaskInput, TaskTagUncheckedCreateWithoutTaskInput> | TaskTagCreateWithoutTaskInput[] | TaskTagUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTagCreateOrConnectWithoutTaskInput | TaskTagCreateOrConnectWithoutTaskInput[]
@@ -27551,6 +29173,13 @@ export namespace Prisma {
     connect?: ActivityLogWhereUniqueInput | ActivityLogWhereUniqueInput[]
   }
 
+  export type TimeEntryUncheckedCreateNestedManyWithoutTaskInput = {
+    create?: XOR<TimeEntryCreateWithoutTaskInput, TimeEntryUncheckedCreateWithoutTaskInput> | TimeEntryCreateWithoutTaskInput[] | TimeEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutTaskInput | TimeEntryCreateOrConnectWithoutTaskInput[]
+    createMany?: TimeEntryCreateManyTaskInputEnvelope
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+  }
+
   export type TaskTagUncheckedCreateNestedManyWithoutTaskInput = {
     create?: XOR<TaskTagCreateWithoutTaskInput, TaskTagUncheckedCreateWithoutTaskInput> | TaskTagCreateWithoutTaskInput[] | TaskTagUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTagCreateOrConnectWithoutTaskInput | TaskTagCreateOrConnectWithoutTaskInput[]
@@ -27564,6 +29193,14 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type ProjectUpdateOneRequiredWithoutTasksNestedInput = {
@@ -27662,6 +29299,20 @@ export namespace Prisma {
     deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
   }
 
+  export type TimeEntryUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<TimeEntryCreateWithoutTaskInput, TimeEntryUncheckedCreateWithoutTaskInput> | TimeEntryCreateWithoutTaskInput[] | TimeEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutTaskInput | TimeEntryCreateOrConnectWithoutTaskInput[]
+    upsert?: TimeEntryUpsertWithWhereUniqueWithoutTaskInput | TimeEntryUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: TimeEntryCreateManyTaskInputEnvelope
+    set?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    disconnect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    delete?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    update?: TimeEntryUpdateWithWhereUniqueWithoutTaskInput | TimeEntryUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: TimeEntryUpdateManyWithWhereWithoutTaskInput | TimeEntryUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: TimeEntryScalarWhereInput | TimeEntryScalarWhereInput[]
+  }
+
   export type TaskTagUpdateManyWithoutTaskNestedInput = {
     create?: XOR<TaskTagCreateWithoutTaskInput, TaskTagUncheckedCreateWithoutTaskInput> | TaskTagCreateWithoutTaskInput[] | TaskTagUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTagCreateOrConnectWithoutTaskInput | TaskTagCreateOrConnectWithoutTaskInput[]
@@ -27744,6 +29395,20 @@ export namespace Prisma {
     update?: ActivityLogUpdateWithWhereUniqueWithoutTaskInput | ActivityLogUpdateWithWhereUniqueWithoutTaskInput[]
     updateMany?: ActivityLogUpdateManyWithWhereWithoutTaskInput | ActivityLogUpdateManyWithWhereWithoutTaskInput[]
     deleteMany?: ActivityLogScalarWhereInput | ActivityLogScalarWhereInput[]
+  }
+
+  export type TimeEntryUncheckedUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<TimeEntryCreateWithoutTaskInput, TimeEntryUncheckedCreateWithoutTaskInput> | TimeEntryCreateWithoutTaskInput[] | TimeEntryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TimeEntryCreateOrConnectWithoutTaskInput | TimeEntryCreateOrConnectWithoutTaskInput[]
+    upsert?: TimeEntryUpsertWithWhereUniqueWithoutTaskInput | TimeEntryUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: TimeEntryCreateManyTaskInputEnvelope
+    set?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    disconnect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    delete?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    connect?: TimeEntryWhereUniqueInput | TimeEntryWhereUniqueInput[]
+    update?: TimeEntryUpdateWithWhereUniqueWithoutTaskInput | TimeEntryUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: TimeEntryUpdateManyWithWhereWithoutTaskInput | TimeEntryUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: TimeEntryScalarWhereInput | TimeEntryScalarWhereInput[]
   }
 
   export type TaskTagUncheckedUpdateManyWithoutTaskNestedInput = {
@@ -27920,14 +29585,6 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput
   }
 
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type TaskUpdateOneRequiredWithoutAttachmentsNestedInput = {
     create?: XOR<TaskCreateWithoutAttachmentsInput, TaskUncheckedCreateWithoutAttachmentsInput>
     connectOrCreate?: TaskCreateOrConnectWithoutAttachmentsInput
@@ -27962,6 +29619,34 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutActivitiesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutActivitiesInput, UserUpdateWithoutActivitiesInput>, UserUncheckedUpdateWithoutActivitiesInput>
+  }
+
+  export type TaskCreateNestedOneWithoutTimeEntriesInput = {
+    create?: XOR<TaskCreateWithoutTimeEntriesInput, TaskUncheckedCreateWithoutTimeEntriesInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutTimeEntriesInput
+    connect?: TaskWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutTimeEntriesInput = {
+    create?: XOR<UserCreateWithoutTimeEntriesInput, UserUncheckedCreateWithoutTimeEntriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTimeEntriesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type TaskUpdateOneRequiredWithoutTimeEntriesNestedInput = {
+    create?: XOR<TaskCreateWithoutTimeEntriesInput, TaskUncheckedCreateWithoutTimeEntriesInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutTimeEntriesInput
+    upsert?: TaskUpsertWithoutTimeEntriesInput
+    connect?: TaskWhereUniqueInput
+    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutTimeEntriesInput, TaskUpdateWithoutTimeEntriesInput>, TaskUncheckedUpdateWithoutTimeEntriesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutTimeEntriesNestedInput = {
+    create?: XOR<UserCreateWithoutTimeEntriesInput, UserUncheckedCreateWithoutTimeEntriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTimeEntriesInput
+    upsert?: UserUpsertWithoutTimeEntriesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTimeEntriesInput, UserUpdateWithoutTimeEntriesInput>, UserUncheckedUpdateWithoutTimeEntriesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -28314,6 +29999,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -28323,6 +30010,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -28335,6 +30023,8 @@ export namespace Prisma {
     position: number
     projectId: string
     columnId: string
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
@@ -28342,6 +30032,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -28378,6 +30069,34 @@ export namespace Prisma {
 
   export type ActivityLogCreateManyActorInputEnvelope = {
     data: ActivityLogCreateManyActorInput | ActivityLogCreateManyActorInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TimeEntryCreateWithoutUserInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    task: TaskCreateNestedOneWithoutTimeEntriesInput
+  }
+
+  export type TimeEntryUncheckedCreateWithoutUserInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    taskId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeEntryCreateOrConnectWithoutUserInput = {
+    where: TimeEntryWhereUniqueInput
+    create: XOR<TimeEntryCreateWithoutUserInput, TimeEntryUncheckedCreateWithoutUserInput>
+  }
+
+  export type TimeEntryCreateManyUserInputEnvelope = {
+    data: TimeEntryCreateManyUserInput | TimeEntryCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -28585,6 +30304,8 @@ export namespace Prisma {
     projectId?: StringFilter<"Task"> | string
     columnId?: StringFilter<"Task"> | string
     createdById?: StringNullableFilter<"Task"> | string | null
+    estimatedMinutes?: IntNullableFilter<"Task"> | number | null
+    startedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
   }
@@ -28615,6 +30336,35 @@ export namespace Prisma {
     action?: StringFilter<"ActivityLog"> | string
     meta?: JsonNullableFilter<"ActivityLog">
     createdAt?: DateTimeFilter<"ActivityLog"> | Date | string
+  }
+
+  export type TimeEntryUpsertWithWhereUniqueWithoutUserInput = {
+    where: TimeEntryWhereUniqueInput
+    update: XOR<TimeEntryUpdateWithoutUserInput, TimeEntryUncheckedUpdateWithoutUserInput>
+    create: XOR<TimeEntryCreateWithoutUserInput, TimeEntryUncheckedCreateWithoutUserInput>
+  }
+
+  export type TimeEntryUpdateWithWhereUniqueWithoutUserInput = {
+    where: TimeEntryWhereUniqueInput
+    data: XOR<TimeEntryUpdateWithoutUserInput, TimeEntryUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TimeEntryUpdateManyWithWhereWithoutUserInput = {
+    where: TimeEntryScalarWhereInput
+    data: XOR<TimeEntryUpdateManyMutationInput, TimeEntryUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TimeEntryScalarWhereInput = {
+    AND?: TimeEntryScalarWhereInput | TimeEntryScalarWhereInput[]
+    OR?: TimeEntryScalarWhereInput[]
+    NOT?: TimeEntryScalarWhereInput | TimeEntryScalarWhereInput[]
+    id?: StringFilter<"TimeEntry"> | string
+    minutes?: IntFilter<"TimeEntry"> | number
+    description?: StringNullableFilter<"TimeEntry"> | string | null
+    taskId?: StringFilter<"TimeEntry"> | string
+    userId?: StringFilter<"TimeEntry"> | string
+    createdAt?: DateTimeFilter<"TimeEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"TimeEntry"> | Date | string
   }
 
   export type UserFcmTokenUpsertWithWhereUniqueWithoutUserInput = {
@@ -28706,6 +30456,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -28723,6 +30474,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -28756,6 +30508,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -28773,6 +30526,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -28790,6 +30544,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -28807,6 +30562,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -28829,6 +30585,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
   }
@@ -28846,6 +30603,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
@@ -28879,6 +30637,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -28896,6 +30655,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -28924,6 +30684,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
@@ -28941,6 +30702,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -29283,6 +31045,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
@@ -29300,6 +31063,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
@@ -29381,6 +31145,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
@@ -29398,6 +31163,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
@@ -29482,6 +31248,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     column: TaskColumnCreateNestedOneWithoutTasksInput
@@ -29491,6 +31259,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -29503,6 +31272,8 @@ export namespace Prisma {
     position: number
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
@@ -29510,6 +31281,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -29680,6 +31452,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -29689,6 +31463,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -29701,6 +31476,8 @@ export namespace Prisma {
     position: number
     projectId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
@@ -29708,6 +31485,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -29832,6 +31610,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeCreateNestedManyWithoutUserInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
@@ -29849,6 +31628,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
@@ -29981,6 +31761,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TimeEntryCreateWithoutTaskInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutTimeEntriesInput
+  }
+
+  export type TimeEntryUncheckedCreateWithoutTaskInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TimeEntryCreateOrConnectWithoutTaskInput = {
+    where: TimeEntryWhereUniqueInput
+    create: XOR<TimeEntryCreateWithoutTaskInput, TimeEntryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type TimeEntryCreateManyTaskInputEnvelope = {
+    data: TimeEntryCreateManyTaskInput | TimeEntryCreateManyTaskInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TaskTagCreateWithoutTaskInput = {
     id?: string
     tag: TagCreateNestedOneWithoutTasksInput
@@ -30084,6 +31892,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUpdateManyWithoutUserNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
@@ -30101,6 +31910,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
@@ -30210,6 +32020,22 @@ export namespace Prisma {
     data: XOR<ActivityLogUpdateManyMutationInput, ActivityLogUncheckedUpdateManyWithoutTaskInput>
   }
 
+  export type TimeEntryUpsertWithWhereUniqueWithoutTaskInput = {
+    where: TimeEntryWhereUniqueInput
+    update: XOR<TimeEntryUpdateWithoutTaskInput, TimeEntryUncheckedUpdateWithoutTaskInput>
+    create: XOR<TimeEntryCreateWithoutTaskInput, TimeEntryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type TimeEntryUpdateWithWhereUniqueWithoutTaskInput = {
+    where: TimeEntryWhereUniqueInput
+    data: XOR<TimeEntryUpdateWithoutTaskInput, TimeEntryUncheckedUpdateWithoutTaskInput>
+  }
+
+  export type TimeEntryUpdateManyWithWhereWithoutTaskInput = {
+    where: TimeEntryScalarWhereInput
+    data: XOR<TimeEntryUpdateManyMutationInput, TimeEntryUncheckedUpdateManyWithoutTaskInput>
+  }
+
   export type TaskTagUpsertWithWhereUniqueWithoutTaskInput = {
     where: TaskTagWhereUniqueInput
     update: XOR<TaskTagUpdateWithoutTaskInput, TaskTagUncheckedUpdateWithoutTaskInput>
@@ -30242,6 +32068,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -30252,6 +32080,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
   }
 
   export type TaskUncheckedCreateWithoutTagsInput = {
@@ -30264,6 +32093,8 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
@@ -30271,6 +32102,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutTagsInput = {
@@ -30315,6 +32147,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -30325,6 +32159,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateWithoutTagsInput = {
@@ -30337,6 +32172,8 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
@@ -30344,6 +32181,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TagUpsertWithoutTasksInput = {
@@ -30378,6 +32216,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -30387,6 +32227,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -30400,12 +32241,15 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -30426,6 +32270,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
@@ -30443,6 +32288,7 @@ export namespace Prisma {
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
@@ -30471,6 +32317,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -30480,6 +32328,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -30493,12 +32342,15 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -30525,6 +32377,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
@@ -30542,6 +32395,7 @@ export namespace Prisma {
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
@@ -30654,6 +32508,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -30663,6 +32519,7 @@ export namespace Prisma {
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -30676,12 +32533,15 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -30702,6 +32562,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeCreateNestedManyWithoutUserInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
@@ -30719,6 +32580,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
@@ -30747,6 +32609,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -30756,6 +32620,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -30769,12 +32634,15 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -30801,6 +32669,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUpdateManyWithoutUserNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
@@ -30818,6 +32687,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
@@ -30830,6 +32700,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -30839,6 +32711,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -30852,12 +32725,15 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -30884,6 +32760,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -30893,6 +32771,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -30906,12 +32785,15 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -30922,6 +32804,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -30931,6 +32815,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutTaskInput
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -30944,12 +32829,15 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -30976,6 +32864,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -30985,6 +32875,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutTaskNestedInput
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -30998,12 +32889,15 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -31014,6 +32908,8 @@ export namespace Prisma {
     priority?: $Enums.Priority
     dueDate?: Date | string | null
     position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutTasksInput
@@ -31023,6 +32919,7 @@ export namespace Prisma {
     comments?: CommentCreateNestedManyWithoutTaskInput
     checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
     attachments?: AttachmentCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutTaskInput
     tags?: TaskTagCreateNestedManyWithoutTaskInput
   }
 
@@ -31036,12 +32933,15 @@ export namespace Prisma {
     projectId: string
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
     comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
     checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
     attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutTaskInput
     tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -31062,6 +32962,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeCreateNestedManyWithoutUserInput
     comments?: CommentCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
+    timeEntries?: TimeEntryCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationCreateNestedManyWithoutActorInput
@@ -31079,6 +32980,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
     comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
     createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
+    timeEntries?: TimeEntryUncheckedCreateNestedManyWithoutUserInput
     fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
@@ -31107,6 +33009,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -31116,6 +33020,7 @@ export namespace Prisma {
     comments?: CommentUpdateManyWithoutTaskNestedInput
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -31129,12 +33034,15 @@ export namespace Prisma {
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
     comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -31161,6 +33069,7 @@ export namespace Prisma {
     assigned?: TaskAssigneeUpdateManyWithoutUserNestedInput
     comments?: CommentUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutUserNestedInput
     fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
@@ -31178,6 +33087,199 @@ export namespace Prisma {
     assigned?: TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
     comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
     createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutUserNestedInput
+    fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type TaskCreateWithoutTimeEntriesInput = {
+    id?: string
+    title: string
+    description?: string | null
+    priority?: $Enums.Priority
+    dueDate?: Date | string | null
+    position: number
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutTasksInput
+    column: TaskColumnCreateNestedOneWithoutTasksInput
+    createdBy?: UserCreateNestedOneWithoutCreatedTasksInput
+    assignees?: TaskAssigneeCreateNestedManyWithoutTaskInput
+    comments?: CommentCreateNestedManyWithoutTaskInput
+    checklist?: ChecklistItemCreateNestedManyWithoutTaskInput
+    attachments?: AttachmentCreateNestedManyWithoutTaskInput
+    activities?: ActivityLogCreateNestedManyWithoutTaskInput
+    tags?: TaskTagCreateNestedManyWithoutTaskInput
+  }
+
+  export type TaskUncheckedCreateWithoutTimeEntriesInput = {
+    id?: string
+    title: string
+    description?: string | null
+    priority?: $Enums.Priority
+    dueDate?: Date | string | null
+    position: number
+    projectId: string
+    columnId: string
+    createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignees?: TaskAssigneeUncheckedCreateNestedManyWithoutTaskInput
+    comments?: CommentUncheckedCreateNestedManyWithoutTaskInput
+    checklist?: ChecklistItemUncheckedCreateNestedManyWithoutTaskInput
+    attachments?: AttachmentUncheckedCreateNestedManyWithoutTaskInput
+    activities?: ActivityLogUncheckedCreateNestedManyWithoutTaskInput
+    tags?: TaskTagUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type TaskCreateOrConnectWithoutTimeEntriesInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutTimeEntriesInput, TaskUncheckedCreateWithoutTimeEntriesInput>
+  }
+
+  export type UserCreateWithoutTimeEntriesInput = {
+    id?: string
+    name: string
+    email: string
+    image?: string | null
+    passwordHash?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspaces?: WorkspaceMemberCreateNestedManyWithoutUserInput
+    assigned?: TaskAssigneeCreateNestedManyWithoutUserInput
+    comments?: CommentCreateNestedManyWithoutAuthorInput
+    createdTasks?: TaskCreateNestedManyWithoutCreatedByInput
+    activities?: ActivityLogCreateNestedManyWithoutActorInput
+    fcmTokens?: UserFcmTokenCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    actedNotifications?: NotificationCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutTimeEntriesInput = {
+    id?: string
+    name: string
+    email: string
+    image?: string | null
+    passwordHash?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    workspaces?: WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+    assigned?: TaskAssigneeUncheckedCreateNestedManyWithoutUserInput
+    comments?: CommentUncheckedCreateNestedManyWithoutAuthorInput
+    createdTasks?: TaskUncheckedCreateNestedManyWithoutCreatedByInput
+    activities?: ActivityLogUncheckedCreateNestedManyWithoutActorInput
+    fcmTokens?: UserFcmTokenUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    actedNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutTimeEntriesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTimeEntriesInput, UserUncheckedCreateWithoutTimeEntriesInput>
+  }
+
+  export type TaskUpsertWithoutTimeEntriesInput = {
+    update: XOR<TaskUpdateWithoutTimeEntriesInput, TaskUncheckedUpdateWithoutTimeEntriesInput>
+    create: XOR<TaskCreateWithoutTimeEntriesInput, TaskUncheckedCreateWithoutTimeEntriesInput>
+    where?: TaskWhereInput
+  }
+
+  export type TaskUpdateToOneWithWhereWithoutTimeEntriesInput = {
+    where?: TaskWhereInput
+    data: XOR<TaskUpdateWithoutTimeEntriesInput, TaskUncheckedUpdateWithoutTimeEntriesInput>
+  }
+
+  export type TaskUpdateWithoutTimeEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
+    column?: TaskColumnUpdateOneRequiredWithoutTasksNestedInput
+    createdBy?: UserUpdateOneWithoutCreatedTasksNestedInput
+    assignees?: TaskAssigneeUpdateManyWithoutTaskNestedInput
+    comments?: CommentUpdateManyWithoutTaskNestedInput
+    checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
+    attachments?: AttachmentUpdateManyWithoutTaskNestedInput
+    activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    tags?: TaskTagUpdateManyWithoutTaskNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutTimeEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    position?: IntFieldUpdateOperationsInput | number
+    projectId?: StringFieldUpdateOperationsInput | string
+    columnId?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutTaskNestedInput
+    checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
+    attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
+    activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type UserUpsertWithoutTimeEntriesInput = {
+    update: XOR<UserUpdateWithoutTimeEntriesInput, UserUncheckedUpdateWithoutTimeEntriesInput>
+    create: XOR<UserCreateWithoutTimeEntriesInput, UserUncheckedCreateWithoutTimeEntriesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTimeEntriesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTimeEntriesInput, UserUncheckedUpdateWithoutTimeEntriesInput>
+  }
+
+  export type UserUpdateWithoutTimeEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspaces?: WorkspaceMemberUpdateManyWithoutUserNestedInput
+    assigned?: TaskAssigneeUpdateManyWithoutUserNestedInput
+    comments?: CommentUpdateManyWithoutAuthorNestedInput
+    createdTasks?: TaskUpdateManyWithoutCreatedByNestedInput
+    activities?: ActivityLogUpdateManyWithoutActorNestedInput
+    fcmTokens?: UserFcmTokenUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    actedNotifications?: NotificationUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTimeEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    workspaces?: WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+    assigned?: TaskAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    comments?: CommentUncheckedUpdateManyWithoutAuthorNestedInput
+    createdTasks?: TaskUncheckedUpdateManyWithoutCreatedByNestedInput
+    activities?: ActivityLogUncheckedUpdateManyWithoutActorNestedInput
     fcmTokens?: UserFcmTokenUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     actedNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
@@ -31211,6 +33313,8 @@ export namespace Prisma {
     position: number
     projectId: string
     columnId: string
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31221,6 +33325,15 @@ export namespace Prisma {
     action: string
     meta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type TimeEntryCreateManyUserInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    taskId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type UserFcmTokenCreateManyUserInput = {
@@ -31320,6 +33433,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -31329,6 +33444,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -31341,6 +33457,8 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
@@ -31348,6 +33466,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -31360,6 +33479,8 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     projectId?: StringFieldUpdateOperationsInput | string
     columnId?: StringFieldUpdateOperationsInput | string
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31386,6 +33507,33 @@ export namespace Prisma {
     action?: StringFieldUpdateOperationsInput | string
     meta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeEntryUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    task?: TaskUpdateOneRequiredWithoutTimeEntriesNestedInput
+  }
+
+  export type TimeEntryUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeEntryUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    taskId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserFcmTokenUpdateWithoutUserInput = {
@@ -31632,6 +33780,8 @@ export namespace Prisma {
     position: number
     columnId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31669,6 +33819,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     column?: TaskColumnUpdateOneRequiredWithoutTasksNestedInput
@@ -31678,6 +33830,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -31690,6 +33843,8 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
@@ -31697,6 +33852,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -31709,6 +33865,8 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     columnId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31742,6 +33900,8 @@ export namespace Prisma {
     position: number
     projectId: string
     createdById?: string | null
+    estimatedMinutes?: number | null
+    startedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31753,6 +33913,8 @@ export namespace Prisma {
     priority?: EnumPriorityFieldUpdateOperationsInput | $Enums.Priority
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     position?: IntFieldUpdateOperationsInput | number
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutTasksNestedInput
@@ -31762,6 +33924,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUpdateManyWithoutTaskNestedInput
   }
 
@@ -31774,6 +33937,8 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     projectId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     assignees?: TaskAssigneeUncheckedUpdateManyWithoutTaskNestedInput
@@ -31781,6 +33946,7 @@ export namespace Prisma {
     checklist?: ChecklistItemUncheckedUpdateManyWithoutTaskNestedInput
     attachments?: AttachmentUncheckedUpdateManyWithoutTaskNestedInput
     activities?: ActivityLogUncheckedUpdateManyWithoutTaskNestedInput
+    timeEntries?: TimeEntryUncheckedUpdateManyWithoutTaskNestedInput
     tags?: TaskTagUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -31793,6 +33959,8 @@ export namespace Prisma {
     position?: IntFieldUpdateOperationsInput | number
     projectId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedMinutes?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31831,6 +33999,15 @@ export namespace Prisma {
     action: string
     meta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+  }
+
+  export type TimeEntryCreateManyTaskInput = {
+    id?: string
+    minutes: number
+    description?: string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type TaskTagCreateManyTaskInput = {
@@ -31944,6 +34121,33 @@ export namespace Prisma {
     action?: StringFieldUpdateOperationsInput | string
     meta?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeEntryUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTimeEntriesNestedInput
+  }
+
+  export type TimeEntryUncheckedUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TimeEntryUncheckedUpdateManyWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    minutes?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type TaskTagUpdateWithoutTaskInput = {

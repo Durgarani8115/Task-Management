@@ -212,6 +212,8 @@ exports.Prisma.TaskScalarFieldEnum = {
   projectId: 'projectId',
   columnId: 'columnId',
   createdById: 'createdById',
+  estimatedMinutes: 'estimatedMinutes',
+  startedAt: 'startedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -268,6 +270,16 @@ exports.Prisma.ActivityLogScalarFieldEnum = {
   action: 'action',
   meta: 'meta',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.TimeEntryScalarFieldEnum = {
+  id: 'id',
+  minutes: 'minutes',
+  description: 'description',
+  taskId: 'taskId',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -337,7 +349,8 @@ exports.Prisma.ModelName = {
   Comment: 'Comment',
   ChecklistItem: 'ChecklistItem',
   Attachment: 'Attachment',
-  ActivityLog: 'ActivityLog'
+  ActivityLog: 'ActivityLog',
+  TimeEntry: 'TimeEntry'
 };
 
 /**

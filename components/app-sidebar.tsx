@@ -98,18 +98,13 @@ export async function AppSidebar() {
             <SidebarHeader className="bg-sidebar">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild>
-                            <Link href="/dashboard" className="flex items-center gap-3 h-auto py-2.5" >
-                                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-sidebar-border shadow-sm bg-black/10 dark:bg-white/5">
-                                    <img
-                                        src="/clove-logoo.png"
-                                        alt="Clove Icon"
-                                        className="max-w-none w-20 h-auto object-cover object-left"
-                                    />
-                                </div>
-                                <div className="flex flex-col items-start overflow-hidden group-data-[collapsible=icon]:hidden">
-                                    <span className="font-bold text-sm text-foreground tracking-tight">Clove</span>
-                                    <span className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase">SaaS Enterprise</span>
+                        <SidebarMenuButton asChild className="h-auto py-2 hover:bg-transparent">
+                            <Link href="/dashboard" className="flex items-center gap-2 group/sidebarlogo">
+                                {/* text-only green logo for sidebar with dark glow effect */}
+                                <div className="flex items-center">
+                                    <span className="font-black text-lg tracking-widest text-emerald-600 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-emerald-400 dark:via-emerald-200 dark:to-green-400 transition-all duration-300 group-hover/sidebarlogo:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
+                                        CLOVE
+                                    </span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
