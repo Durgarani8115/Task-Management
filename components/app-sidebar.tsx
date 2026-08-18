@@ -16,8 +16,10 @@ import db from "@/lib/db";
 import { getServerSession } from "@/lib/auth"
 import { Home, Settings, Briefcase, FolderKanban, LayoutGrid, LogOut, TrendingUp } from "lucide-react";
 import SidebarProjectsList from "@/components/dashboard/sidebar-projects-list";
+import { CloveLogo } from "@/components/ui/clove-logo";
 
 export async function AppSidebar() {
+
     // get current logged in user session
     const user = await getServerSession()
 
@@ -100,12 +102,8 @@ export async function AppSidebar() {
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild className="h-auto py-2 hover:bg-transparent">
                             <Link href="/dashboard" className="flex items-center gap-2 group/sidebarlogo">
-                                {/* text-only green logo for sidebar with dark glow effect */}
-                                <div className="flex items-center">
-                                    <span className="font-black text-lg tracking-widest text-emerald-600 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-emerald-400 dark:via-emerald-200 dark:to-green-400 transition-all duration-300 group-hover/sidebarlogo:drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">
-                                        CLOVE
-                                    </span>
-                                </div>
+                                {/* clove logo icon and text without dot */}
+                                <CloveLogo textSize="text-lg" iconSize={22} />
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

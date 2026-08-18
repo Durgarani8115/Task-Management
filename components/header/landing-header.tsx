@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/header/theme-toggle";
+import { CloveLogo } from "@/components/ui/clove-logo";
 
 interface LandingHeaderProps {
   user: {
@@ -41,13 +42,9 @@ export function LandingHeader({ user }: LandingHeaderProps) {
         }`}
     >
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 transition-all duration-300">
-        {/* text-only clove logo with minimal green glowing effect */}
-        <Link href="/" className="flex items-center gap-1.5 group">
-          <span className="text-2xl font-black tracking-widest text-emerald-700 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-emerald-400 dark:via-emerald-200 dark:to-green-400 transition-all duration-300 group-hover:drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]">
-            CLOVE
-          </span>
-          {/* minimal green accent dot */}
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 dark:shadow-[0_0_6px_#22c55e] animate-pulse" />
+        {/* clove logo with icon mark and text without dot */}
+        <Link href="/">
+          <CloveLogo textSize="text-2xl" iconSize={28} />
         </Link>
 
         {/* right navigation section */}

@@ -90,7 +90,7 @@ export function HeroSection({ user }: HeroSectionProps) {
         {/* top shiny status pill badge */}
         <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 dark:bg-emerald-500/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 shadow-sm backdrop-blur-md">
           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-          <ShinyText text="Clove 2.0 Task Management" color="#15803d" shineColor="#86efac" speed={3} />
+          <ShinyText text="Clove - Project Management" color="#15803d" shineColor="#86efac" speed={3} />
         </div>
 
         {/* main interactive proximity heading */}
